@@ -338,7 +338,22 @@ install_v2ray() {
   # shellcheck disable=SC2153
   if [[ -z "$JSONS_PATH" ]] && [[ ! -d "$JSON_PATH" ]]; then
     install -d "$JSON_PATH"
-    echo "{}" > "${JSON_PATH}/config.json"
+    echo "{
+      "inbounds": [
+        {
+          "protocol": "vmess",
+          "port": 33445,
+          "settings": {
+            "clients": [
+              {"id": "12342234-3234-4234-5234-623472348234"}
+            ]
+          }
+        }
+      ],
+      "outbounds": [
+        {"protocol": "freedom"}
+      ]
+    }" > "${JSON_PATH}/config.json"
     CONFIG_NEW='1'
   fi
 
