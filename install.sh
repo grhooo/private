@@ -240,7 +240,7 @@ get_version() {
     echo 'error: Failed to get release list, please check your network.'
     exit 1
   fi
-  RELEASE_LATEST="$(sed 'y/,/\n/' "$TMP_FILE" | grep 'tag_name' | awk -F '"' '{print $4}')"
+  RELEASE_LATEST="$(sed 'y/,/\n/' "$TMP_FILE" | grep -m 1 'tag_name' | awk -F '"' '{print $4}')"
   "rm" "$TMP_FILE"
   RELEASE_VERSION="v${RELEASE_LATEST#v}"
   # Compare V2Ray version numbers
