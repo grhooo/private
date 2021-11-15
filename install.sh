@@ -233,7 +233,7 @@ get_version() {
       return
     fi
   fi
-  # Get V2Ray release version number
+  # Get V2Ray Pre-release version number 修改238行https,243行grep
   TMP_FILE="$(mktemp)"
   if ! curl -x "${PROXY}" -sS -H "Accept: application/vnd.github.v3+json" -o "$TMP_FILE" 'https://api.github.com/repos/v2fly/v2ray-core/releases'; then
     "rm" "$TMP_FILE"
