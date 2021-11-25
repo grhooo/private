@@ -1,4 +1,4 @@
-apt install curl -y && bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install --beta && sed -i '3a\    "error": "none",' /usr/local/etc/xray/config.json
+bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install --beta && sed -i '3a\    "error": "none",' /usr/local/etc/xray/config.json
 sed -i 's/^Port\s.*/Port 27184/m' /etc/ssh/sshd_config || echo 'Port 27184' >> /etc/ssh/sshd_config
 sed -i 's/domain-name-servers, //' /etc/dhcp/dhclient.conf
 rm /etc/resolv.conf && echo -e 'nameserver 8.8.8.8\nnameserver 180.76.76.76' >> /etc/resolv.conf
