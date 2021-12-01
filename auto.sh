@@ -1,5 +1,5 @@
 ## 更新beta版，修改配置文件
-bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install --beta && sed -i '3a\    "error": "none",' /usr/local/etc/xray/config.json
+bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install --beta && sed -i '3a\    "error": "none",' /usr/local/etc/xray/config.json && sed -i 's#"http/1.1"#"h2", "http/1.1"#' /usr/local/etc/xray/config.json
 ## 修改DNS
 sed -i 's/domain-name-servers, //' /etc/dhcp/dhclient.conf
 rm /etc/resolv.conf && echo -e 'nameserver 8.8.8.8\nnameserver 180.76.76.76' >> /etc/resolv.conf
