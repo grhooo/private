@@ -339,13 +339,24 @@ install_v2ray() {
   if [[ -z "$JSONS_PATH" ]] && [[ ! -d "$JSON_PATH" ]]; then
     install -d "$JSON_PATH"
     echo '{
+  "policy": {
+    "0": {
+    "uplinkOnly": 0,
+    "downlinkOnly": 0,
+    "bufferSize": 10240
+    }
+  },
   "inbounds": [
     {
-      "protocol": "vmess",
       "port": 33445,
+      "protocol": "vmess",
       "settings": {
         "clients": [
-          {"id": "12342234-3234-4234-5234-623472348234"}
+          {
+            "id": "a1eeeb48-1133-485b-8e92-b336c18bf827",
+            "level": 0,
+            "alterId": 0
+          }
         ]
       }
     }
