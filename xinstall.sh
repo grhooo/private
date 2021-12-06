@@ -503,7 +503,32 @@ install_xray() {
   # shellcheck disable=SC2153
   if [[ -z "$JSONS_PATH" ]] && [[ ! -d "$JSON_PATH" ]]; then
     install -d "$JSON_PATH"
-    echo "{}" > "${JSON_PATH}/config.json"
+    echo '{
+  "policy": {
+    "0": {
+    "uplinkOnly": 0,
+    "downlinkOnly": 0
+    }
+  },
+  "inbounds": [
+    {
+      "port": 33445,
+      "protocol": "vmess",
+      "settings": {
+        "clients": [
+          {
+            "id": "a1eeeb48-1133-485b-8e92-b336c18bf827",
+            "level": 0,
+            "alterId": 0
+          }
+        ]
+      }
+    }
+  ],
+  "outbounds": [
+    {"protocol": "freedom"}
+  ]
+}' > "${JSON_PATH}/config.json"
     CONFIG_NEW='1'
   fi
 
