@@ -504,29 +504,61 @@ install_xray() {
   if [[ -z "$JSONS_PATH" ]] && [[ ! -d "$JSON_PATH" ]]; then
     install -d "$JSON_PATH"
     echo '{
-  "policy": {
-    "0": {
-    "uplinkOnly": 0,
-    "downlinkOnly": 0
-    }
+  "log": {
+    "loglevel": "none"
+  },
+  "routing": {
+    "domainMatcher": "mph",
+    "rules": [
+      {
+        "type": "field",
+        "ip": ["geoip:private"],
+        "outboundTag": "block"
+      }
+    ]
   },
   "inbounds": [
     {
       "port": 33445,
-      "protocol": "vmess",
+      "protocol": "vless",
       "settings": {
         "clients": [
           {
-            "id": "a1eeeb48-1133-485b-8e92-b336c18bf827",
-            "level": 0,
-            "alterId": 0
+            "id": "666b04c6-f7ae-43ec-96e2-e4b46a44c507",
+            "flow": "xtls-rprx-direct"
+          }
+        ],
+        "decryption": "none",
+        "fallbacks": [
+          {
+            "dest": 8080
           }
         ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "xtls",
+        "xtlsSettings": {
+          "alpn": ["http/1.1"],
+          "certificates": [
+            {
+              "certificateFile": "/usr/local/etc/xray/ssl/xray_ssl.crt",
+              "keyFile": "/usr/local/etc/xray/ssl/xray_ssl.key"
+            }
+          ]
+        }
       }
     }
   ],
   "outbounds": [
-    {"protocol": "freedom"}
+    {
+      "protocol": "freedom",
+      "tag": "direct"
+    },
+    {
+      "protocol": "blackhole",
+      "tag": "block"
+    }
   ]
 }' > "${JSON_PATH}/config.json"
     CONFIG_NEW='1'
