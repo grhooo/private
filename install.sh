@@ -339,12 +339,25 @@ install_v2ray() {
   if [[ -z "$JSONS_PATH" ]] && [[ ! -d "$JSON_PATH" ]]; then
     install -d "$JSON_PATH"
     echo '{
+  "log": {
+    "loglevel": "none"
+  },
   "policy": {
     "0": {
-    "uplinkOnly": 0,
-    "downlinkOnly": 0,
+    "uplinkOnly": 1,
+    "downlinkOnly": 2,
     "bufferSize": 10240
     }
+  },
+  "routing": {
+    "domainMatcher": "mph",
+    "rules": [
+      {
+        "type": "field",
+        "ip": ["geoip:private"],
+        "outboundTag": "block"
+      }
+    ]
   },
   "inbounds": [
     {
@@ -353,7 +366,7 @@ install_v2ray() {
       "settings": {
         "clients": [
           {
-            "id": "a1eeeb48-1133-485b-8e92-b336c18bf827",
+            "id": "666b04c6-f7ae-43ec-96e2-e4b46a44c507",
             "level": 0,
             "alterId": 0
           }
@@ -362,7 +375,14 @@ install_v2ray() {
     }
   ],
   "outbounds": [
-    {"protocol": "freedom"}
+    {
+      "protocol": "freedom",
+      "tag": "direct"
+    },
+    {
+      "protocol": "blackhole",
+      "tag": "block"
+    }
   ]
 }' > "${JSON_PATH}/config.json"
     CONFIG_NEW='1'
