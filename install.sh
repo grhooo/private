@@ -367,8 +367,7 @@ install_v2ray() {
         "clients": [
           {
             "id": "666b04c6-f7ae-43ec-96e2-e4b46a44c507",
-            "level": 0,
-            "alterId": 0
+            "level": 0
           }
         ]
       }
