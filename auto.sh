@@ -16,13 +16,24 @@ apt update && apt install caddy && rm /etc/caddy/Caddyfile && echo -e ':8080 {\n
 if ifconfig | grep -q 173.242.127.61
 then
   sed -i 's/ptbt.top/us.ptbt.top/m' /etc/caddy/Caddyfile
+  wget -P /usr/local/share/ca-certificates https://github.com/grhooo/private/raw/main/cer/us/ptbt.crt
+  wget -P /usr/local/share/ca-certificates https://github.com/grhooo/private/raw/main/cer/us/ptbt.key 
 else
   sed -i 's/ptbt.top/jp.ptbt.top/m' /etc/caddy/Caddyfile
+  wget -P /usr/local/share/ca-certificates https://github.com/grhooo/private/raw/main/cer/jp/ptbt.crt
+  wget -P /usr/local/share/ca-certificates https://github.com/grhooo/private/raw/main/cer/jp/ptbt.key
 fi
+## 证书权限
+chmod u+x /usr/local/share/ca-certificates/ptbt.crt
+chmod u+x /usr/local/share/ca-certificates/ptbt.key
 ## xray
 curl -L https://github.com/grhooo/private/raw/main/xinstall.sh >> install.sh
 chmod u+x install.sh
 bash -c "$(cat /root/install.sh)" @ install --beta --without-geodata
+## xray权限
+sed -i 's/User=nobody/User=root/g' /etc/systemd/system/xray.service
+sed -i 's/CapabilityBoundingSet=/#CapabilityBoundingSet=/g' /etc/systemd/system/xray.service
+sed -i 's/AmbientCapabilities=/#AmbientCapabilities=/g' /etc/systemd/system/xray.service
 ## 每天6:00更新版本
 timedatectl set-timezone Asia/Shanghai
 echo -e '00 6 * * * bash -c "$(cat /root/install.sh)" @ install --beta --without-geodata' >> /var/spool/cron/crontabs/root
