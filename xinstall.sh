@@ -353,15 +353,15 @@ get_current_version() {
 }
 
 get_latest_version() {
-  # Get Xray Pre-release version number 修改359行https,364行grep
+  # Get Xray latest release version number
   local tmp_file
   tmp_file="$(mktemp)"
-  if ! curl -x "${PROXY}" -sS -H "Accept: application/vnd.github.v3+json" -o "$tmp_file" 'https://api.github.com/repos/XTLS/Xray-core/releases'; then
+  if ! curl -x "${PROXY}" -sS -H "Accept: application/vnd.github.v3+json" -o "$tmp_file" 'https://api.github.com/repos/XTLS/Xray-core/releases/latest'; then
     "rm" "$tmp_file"
     echo 'error: Failed to get release list, please check your network.'
     exit 1
   fi
-  RELEASE_LATEST="$(sed 'y/,/\n/' "$tmp_file" | grep -m 1 'tag_name' | awk -F '"' '{print $4}')"
+  RELEASE_LATEST="$(sed 'y/,/\n/' "$tmp_file" | grep 'tag_name' | awk -F '"' '{print $4}')"
   if [[ -z "$RELEASE_LATEST" ]]; then
     if grep -q "API rate limit exceeded" "$tmp_file"; then
       echo "error: github API rate limit exceeded"
@@ -542,8 +542,8 @@ install_xray() {
           "alpn": ["http/1.1"],
           "certificates": [
             {
-              "certificateFile": "/usr/local/etc/xray/ssl/xray_ssl.crt",
-              "keyFile": "/usr/local/etc/xray/ssl/xray_ssl.key"
+              "certificateFile": "/usr/local/share/ca-certificates/ptbt.crt",
+              "keyFile": "/usr/local/share/ca-certificates/ptbt.key"
             }
           ]
         }
@@ -716,16 +716,16 @@ install_geodata() {
       exit 1
     fi
   }
-  # 修改geoip/geosite.dat下载地址
-  local download_link_geoip="https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat"
-  local download_link_geosite="https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat"
+  local download_link_geoip="https://github.com/v2fly/geoip/releases/latest/download/geoip.dat"
+  local download_link_geosite="https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat"
   local file_ip='geoip.dat'
+  local file_dlc='dlc.dat'
   local file_site='geosite.dat'
   local dir_tmp
   dir_tmp="$(mktemp -d)"
   [[ "$XRAY_IS_INSTALLED_BEFORE_RUNNING_SCRIPT" -eq '0' ]] && echo "warning: Xray was not installed"
   download_geodata $download_link_geoip $file_ip
-  download_geodata $download_link_geosite $file_site
+  download_geodata $download_link_geosite $file_dlc
   cd "${dir_tmp}" || exit
   for i in "${dir_tmp}"/*.sha256sum; do
     if ! sha256sum -c "${i}"; then
@@ -735,7 +735,7 @@ install_geodata() {
   done
   cd - > /dev/null
   install -d "$DAT_PATH"
-  install -m 644 "${dir_tmp}"/${file_site} "${DAT_PATH}"/${file_site}
+  install -m 644 "${dir_tmp}"/${file_dlc} "${DAT_PATH}"/${file_site}
   install -m 644 "${dir_tmp}"/${file_ip} "${DAT_PATH}"/${file_ip}
   rm -r "${dir_tmp}"
   exit 0
