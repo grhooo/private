@@ -507,16 +507,6 @@ install_xray() {
   "log": {
     "loglevel": "none"
   },
-  "routing": {
-    "domainMatcher": "mph",
-    "rules": [
-      {
-        "type": "field",
-        "ip": ["geoip:private"],
-        "outboundTag": "block"
-      }
-    ]
-  },
   "inbounds": [
     {
       "port": 33445,
