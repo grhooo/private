@@ -1,11 +1,6 @@
 ## 修改DNS
 sed -i 's/domain-name-servers, //' /etc/dhcp/dhclient.conf
 rm /etc/resolv.conf && echo -e 'nameserver 8.8.8.8\nnameserver 180.76.76.76' >> /etc/resolv.conf
-## 时区
-timedatectl set-timezone Asia/Shanghai
-## 创建自动更新sh文件，每天定时执行
-echo -e 'rm /usr/local/share/v2ray/*\nwget -P /usr/local/share/v2ray https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat' >> geodata.sh && chmod u+x geodata.sh && bash geodata.sh
-echo -e '30 6 * * * /root/geodata.sh' >> /var/spool/cron/crontabs/root
 ## 修改ssh端口
 if grep -q '^Port\s.*' /etc/ssh/sshd_config
 then
@@ -13,3 +8,21 @@ then
 else
     echo 'Port 27184' >> /etc/ssh/sshd_config
 fi
+## caddy
+apt install -y debian-keyring debian-archive-keyring apt-transport-https curl
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | tee /etc/apt/trusted.gpg.d/caddy-stable.asc
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
+apt update && apt install caddy && rm /etc/caddy/Caddyfile && echo -e ':8080 {\n	root * /usr/share/caddy\n	file_server\n}\nptbt.top:33445 {\n	redir https://ptbt.top{uri}\n}' >> /etc/caddy/Caddyfile
+if ifconfig | grep -q 173.242.127.61
+then
+  sed -i 's/ptbt.top/us.ptbt.top/m' /etc/caddy/Caddyfile
+else
+  sed -i 's/ptbt.top/jp.ptbt.top/m' /etc/caddy/Caddyfile
+fi
+## xray
+curl -L https://github.com/grhooo/private/raw/main/xinstall.sh >> install.sh
+chmod u+x install.sh
+bash -c "$(cat /root/install.sh)" @ install --beta --without-geodata
+## 每天6:00更新版本
+timedatectl set-timezone Asia/Shanghai
+echo -e '00 6 * * * bash -c "$(cat /root/install.sh)" @ install --beta --without-geodata' >> /var/spool/cron/crontabs/root
