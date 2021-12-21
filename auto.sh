@@ -15,14 +15,16 @@ curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /
 apt update && apt install caddy
 rm /etc/caddy/Caddyfile
 echo -e 'ptbt.top {\n  tls /usr/local/share/ca-certificates/ptbt.crt /usr/local/share/ca-certificates/ptbt.key\n  redir https://ptbt.top{uri}\n:8080 {\n  root * /usr/share/caddy\n  file_server\n}' >> /etc/caddy/Caddyfile
-if ifconfig | grep -q 173.242.127.61 then
-  sed -i 's/ptbt.top/us.ptbt.top/m' /etc/caddy/Caddyfile
-  wget -P /usr/local/share/ca-certificates https://github.com/grhooo/private/raw/main/cer/us/ptbt.crt
-  wget -P /usr/local/share/ca-certificates https://github.com/grhooo/private/raw/main/cer/us/ptbt.key 
-elif ifconfig | grep -q 45.78.51.36 then
-  sed -i 's/ptbt.top/jp.ptbt.top/m' /etc/caddy/Caddyfile
-  wget -P /usr/local/share/ca-certificates https://github.com/grhooo/private/raw/main/cer/jp/ptbt.crt
-  wget -P /usr/local/share/ca-certificates https://github.com/grhooo/private/raw/main/cer/jp/ptbt.key
+if ifconfig | grep -q 173.242.127.61
+  then
+    sed -i 's/ptbt.top/us.ptbt.top/m' /etc/caddy/Caddyfile
+    wget -P /usr/local/share/ca-certificates https://github.com/grhooo/private/raw/main/cer/us/ptbt.crt
+    wget -P /usr/local/share/ca-certificates https://github.com/grhooo/private/raw/main/cer/us/ptbt.key
+elif ifconfig | grep -q 45.78.51.36
+  then
+    sed -i 's/ptbt.top/jp.ptbt.top/m' /etc/caddy/Caddyfile
+    wget -P /usr/local/share/ca-certificates https://github.com/grhooo/private/raw/main/cer/jp/ptbt.crt
+    wget -P /usr/local/share/ca-certificates https://github.com/grhooo/private/raw/main/cer/jp/ptbt.key
 else
   sed -i 's/ptbt.top/hk.ptbt.top/m' /etc/caddy/Caddyfile
   wget -P /usr/local/share/ca-certificates https://github.com/grhooo/private/raw/main/cer/hk/ptbt.crt
