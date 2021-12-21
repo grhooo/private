@@ -14,7 +14,7 @@ curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | tee /etc/apt
 curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
 apt update && apt install caddy
 rm /etc/caddy/Caddyfile
-echo -e 'ptbt.top {\n  tls /usr/local/share/ca-certificates/ptbt.crt /usr/local/share/ca-certificates/ptbt.key\n  redir https://ptbt.top{uri}\n:8080 {\n  root * /usr/share/caddy\n  file_server\n}' >> /etc/caddy/Caddyfile
+echo -e 'ptbt.top {\n  tls /usr/local/share/ca-certificates/ptbt.crt /usr/local/share/ca-certificates/ptbt.key\n  redir https://ptbt.top{uri}\n}\n:8080 {\n  root * /usr/share/caddy\n  file_server\n}' >> /etc/caddy/Caddyfile
 if ifconfig | grep -q 173.242.127.61
   then
     sed -i 's/ptbt.top/us.ptbt.top/m' /etc/caddy/Caddyfile
