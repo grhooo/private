@@ -12,8 +12,7 @@ fi
 apt install -y debian-keyring debian-archive-keyring apt-transport-https
 curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | tee /etc/apt/trusted.gpg.d/caddy-stable.asc
 curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
-apt update && apt install caddy
-rm /etc/caddy/Caddyfile
+apt update && apt install caddy && rm /etc/caddy/Caddyfile
 echo -e 'ptbt.top {\n  tls /usr/local/share/ca-certificates/ptbt.crt /usr/local/share/ca-certificates/ptbt.key\n  redir https://ptbt.top{uri}\n}\n:8080 {\n  root * /usr/share/caddy\n  file_server\n}' >> /etc/caddy/Caddyfile
 if ifconfig | grep -q 173.242
   then
@@ -42,5 +41,6 @@ sed -i 's/AmbientCapabilities=/#AmbientCapabilities=/g' /etc/systemd/system/xray
 timedatectl set-timezone Asia/Shanghai
 echo -e '00 6 * * * bash -c "$(cat /root/install.sh)" @ install --beta --without-geodata' >> /var/spool/cron/crontabs/root
 ## 重启服务
+systemctl daemon-reload
 systemctl restart caddy
 systemctl restart xray
