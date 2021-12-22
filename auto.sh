@@ -27,24 +27,24 @@ echo -e '0 4,16 * * * bash -c "$(cat /root/install.sh)" @ install --beta --witho
 ## 生成配置文件,下载证书
 mkdir /etc/caddy
 mkdir /usr/share/caddy
-## chmod -R 777 /usr/share/caddy
 echo -e ':8080 {\n  root * /usr/share/caddy\n  file_server\n}\nptbt.top:80 {\n  redir https://ptbt.top{uri}\n}' >> /etc/caddy/Caddyfile
-if ifconfig | grep -q 3.2
+if ifconfig | grep -q 173.242
   then
-    sed -i 's/pt/us.pt/m' /etc/caddy/Caddyfile
+    sed -i 's/ptbt/us.ptbt/m' /etc/caddy/Caddyfile
     wget -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/us/ptbt.crt https://github.com/grhooo/private/raw/main/cer/us/ptbt.key
-elif ifconfig | grep -q 5.7
+elif ifconfig | grep -q 45.78
   then
-    sed -i 's/pt/jp.pt/m' /etc/caddy/Caddyfile
+    sed -i 's/ptbt/jp.ptbt/m' /etc/caddy/Caddyfile
     wget -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/jp/ptbt.crt https://github.com/grhooo/private/raw/main/cer/jp/ptbt.key
 else
-  sed -i 's/pt/hk.pt/m' /etc/caddy/Caddyfile
+  sed -i 's/ptbt/hk.ptbt/m' /etc/caddy/Caddyfile
   wget -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/hk/ptbt.crt https://github.com/grhooo/private/raw/main/cer/hk/ptbt.key
 fi
 rm /usr/local/etc/xray/config.json
-rm -rf /var/log/xray
 echo -e '{"log":{"access":"none","error":"none"},"inbounds":[{"port":443,"protocol":"vless","settings":{"clients":[{"id":"666b04c6-f7ae-43ec-96e2-e4b46a44c507","flow":"xtls-rprx-direct"}],"decryption":"none","fallbacks":[{"dest":8080}]},"streamSettings":{"network":"tcp","security":"xtls","xtlsSettings":{"alpn":["http/1.1"],"certificates":[{"certificateFile":"/usr/local/etc/xray/ptbt.crt","keyFile":"/usr/local/etc/xray/ptbt.key"}]}}}],"outbounds":[{"protocol":"freedom"}]}' >> /usr/local/etc/xray/config.json
 systemctl daemon-reload
 systemctl enable --now caddy
 systemctl restart xray
+rm -rf /var/log/xray
 systemctl | grep -E 'caddy|xray'
+cat /etc/caddy/Caddyfile
