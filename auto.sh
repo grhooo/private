@@ -46,5 +46,5 @@ rm /usr/local/etc/xray/config.json
 rm -rf /var/log/xray
 echo -e '{"log":{"access":"/root/access.log","error":"/root/error.log"},"inbounds":[{"port":443,"protocol":"vless","settings":{"clients":[{"id":"666b04c6-f7ae-43ec-96e2-e4b46a44c507","flow":"xtls-rprx-direct"}],"decryption":"none","fallbacks":[{"dest":80,"xver":1}]},"streamSettings":{"network":"tcp","security":"xtls","xtlsSettings":{"alpn":["h2","http/1.1"],"certificates":[{"certificateFile":"/usr/local/etc/xray/ptbt.crt","keyFile":"/usr/local/etc/xray/ptbt.key"}]}}}],"outbounds":[{"protocol":"freedom"}]}' >> /usr/local/etc/xray/config.json
 systemctl daemon-reload
-systemctl enable caddy
+systemctl enable --now caddy
 systemctl restart xray
