@@ -13,22 +13,21 @@ wget -O /usr/bin/caddy https://caddyserver.com/api/download
 chmod 755 /usr/bin/caddy
 groupadd --system caddy
 wget -P /etc/systemd/system https://github.com/grhooo/private/raw/main/caddy.service
-chmod 777 /etc/systemd/system/caddy.service
 ## 安装xray
-curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh >> install.sh
+wget -O /root/install.sh https://github.com/XTLS/Xray-install/raw/main/install-release.sh
 chmod u+x install.sh
 bash -c "$(cat /root/install.sh)" @ install --beta --without-geodata
 ## xray权限
 sed -i 's/User=nobody/User=root/g' /etc/systemd/system/xray.service
 sed -i 's/CapabilityBoundingSet=/#CapabilityBoundingSet=/g' /etc/systemd/system/xray.service
 sed -i 's/AmbientCapabilities=/#AmbientCapabilities=/g' /etc/systemd/system/xray.service
-## 每天6:00更新版本
+## 每天4:00,16:00更新版本
 timedatectl set-timezone Asia/Shanghai
-echo -e '00 6 * * * bash -c "$(cat /root/install.sh)" @ install --beta --without-geodata' >> /var/spool/cron/crontabs/root
+echo -e '0 4,16 * * * bash -c "$(cat /root/install.sh)" @ install --beta --without-geodata' >> /var/spool/cron/crontabs/root
 ## 生成配置文件,下载证书
 mkdir /etc/caddy
 mkdir /usr/share/caddy
-chmod 775 /usr/share/caddy
+## chmod -R 777 /usr/share/caddy
 echo -e ':8080 {\n  root * /usr/share/caddy\n  file_server\n}\nptbt.top:80 {\n  redir https://ptbt.top{uri}\n}' >> /etc/caddy/Caddyfile
 if ifconfig | grep -q 3.2
   then
@@ -44,7 +43,8 @@ else
 fi
 rm /usr/local/etc/xray/config.json
 rm -rf /var/log/xray
-echo -e '{"log":{"access":"/root/access.log","error":"/root/error.log"},"inbounds":[{"port":443,"protocol":"vless","settings":{"clients":[{"id":"666b04c6-f7ae-43ec-96e2-e4b46a44c507","flow":"xtls-rprx-direct"}],"decryption":"none","fallbacks":[{"dest":80,"xver":1}]},"streamSettings":{"network":"tcp","security":"xtls","xtlsSettings":{"alpn":["h2","http/1.1"],"certificates":[{"certificateFile":"/usr/local/etc/xray/ptbt.crt","keyFile":"/usr/local/etc/xray/ptbt.key"}]}}}],"outbounds":[{"protocol":"freedom"}]}' >> /usr/local/etc/xray/config.json
+echo -e '{"log":{"access":"none","error":"none"},"inbounds":[{"port":443,"protocol":"vless","settings":{"clients":[{"id":"666b04c6-f7ae-43ec-96e2-e4b46a44c507","flow":"xtls-rprx-direct"}],"decryption":"none","fallbacks":[{"dest":8080}]},"streamSettings":{"network":"tcp","security":"xtls","xtlsSettings":{"alpn":["http/1.1"],"certificates":[{"certificateFile":"/usr/local/etc/xray/ptbt.crt","keyFile":"/usr/local/etc/xray/ptbt.key"}]}}}],"outbounds":[{"protocol":"freedom"}]}' >> /usr/local/etc/xray/config.json
 systemctl daemon-reload
 systemctl enable --now caddy
 systemctl restart xray
+systemctl | grep -E 'caddy|xray'
