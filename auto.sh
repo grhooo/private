@@ -8,29 +8,14 @@ then
 else
   echo 'Port 27184' >> /etc/ssh/sshd_config
 fi
-## caddy
-apt install -y debian-keyring debian-archive-keyring apt-transport-https
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | tee /etc/apt/trusted.gpg.d/caddy-stable.asc
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
-apt update && apt install caddy && rm /etc/caddy/Caddyfile
-echo -e 'ptbt.top {\n  tls /usr/local/share/ca-certificates/ptbt.crt /usr/local/share/ca-certificates/ptbt.key\n  redir https://ptbt.top{uri}\n}\n:8080 {\n  root * /usr/share/caddy\n  file_server\n}' >> /etc/caddy/Caddyfile
-if ifconfig | grep -q 173.242
-  then
-    sed -i 's/ptbt.top/us.ptbt.top/m' /etc/caddy/Caddyfile
-    wget -P /usr/local/share/ca-certificates https://github.com/grhooo/private/raw/main/cer/us/ptbt.crt
-    wget -P /usr/local/share/ca-certificates https://github.com/grhooo/private/raw/main/cer/us/ptbt.key
-elif ifconfig | grep -q 45.78
-  then
-    sed -i 's/ptbt.top/jp.ptbt.top/m' /etc/caddy/Caddyfile
-    wget -P /usr/local/share/ca-certificates https://github.com/grhooo/private/raw/main/cer/jp/ptbt.crt
-    wget -P /usr/local/share/ca-certificates https://github.com/grhooo/private/raw/main/cer/jp/ptbt.key
-else
-  sed -i 's/ptbt.top/hk.ptbt.top/m' /etc/caddy/Caddyfile
-  wget -P /usr/local/share/ca-certificates https://github.com/grhooo/private/raw/main/cer/hk/ptbt.crt
-  wget -P /usr/local/share/ca-certificates https://github.com/grhooo/private/raw/main/cer/hk/ptbt.key
-fi
-## xray
-curl -L https://github.com/grhooo/private/raw/main/xinstall.sh >> install.sh
+## 安装caddy
+wget -O /usr/bin/caddy https://caddyserver.com/api/download
+chmod 755 /usr/bin/caddy
+groupadd --system caddy
+wget -P /etc/systemd/system https://github.com/grhooo/private/raw/main/caddy.service
+chmod 777 /etc/systemd/system/caddy.service
+## 安装xray
+curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh >> install.sh
 chmod u+x install.sh
 bash -c "$(cat /root/install.sh)" @ install --beta --without-geodata
 ## xray权限
@@ -40,7 +25,26 @@ sed -i 's/AmbientCapabilities=/#AmbientCapabilities=/g' /etc/systemd/system/xray
 ## 每天6:00更新版本
 timedatectl set-timezone Asia/Shanghai
 echo -e '00 6 * * * bash -c "$(cat /root/install.sh)" @ install --beta --without-geodata' >> /var/spool/cron/crontabs/root
-## 重启服务
+## 生成配置文件,下载证书
+mkdir /etc/caddy
+mkdir /usr/share/caddy
+chmod 775 /usr/share/caddy
+echo -e ':8080 {\n  root * /usr/share/caddy\n  file_server\n}\nptbt.top:80 {\n  redir https://ptbt.top{uri}\n}' >> /etc/caddy/Caddyfile
+if ifconfig | grep -q 3.2
+  then
+    sed -i 's/pt/us.pt/m' /etc/caddy/Caddyfile
+    wget -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/us/ptbt.crt https://github.com/grhooo/private/raw/main/cer/us/ptbt.key
+elif ifconfig | grep -q 5.7
+  then
+    sed -i 's/pt/jp.pt/m' /etc/caddy/Caddyfile
+    wget -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/jp/ptbt.crt https://github.com/grhooo/private/raw/main/cer/jp/ptbt.key
+else
+  sed -i 's/pt/hk.pt/m' /etc/caddy/Caddyfile
+  wget -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/hk/ptbt.crt https://github.com/grhooo/private/raw/main/cer/hk/ptbt.key
+fi
+rm /usr/local/etc/xray/config.json
+rm -rf /var/log/xray
+echo -e '{"log":{"access":"/root/access.log","error":"/root/error.log"},"inbounds":[{"port":443,"protocol":"vless","settings":{"clients":[{"id":"666b04c6-f7ae-43ec-96e2-e4b46a44c507","flow":"xtls-rprx-direct"}],"decryption":"none","fallbacks":[{"dest":80,"xver":1}]},"streamSettings":{"network":"tcp","security":"xtls","xtlsSettings":{"alpn":["h2","http/1.1"],"certificates":[{"certificateFile":"/usr/local/etc/xray/ptbt.crt","keyFile":"/usr/local/etc/xray/ptbt.key"}]}}}],"outbounds":[{"protocol":"freedom"}]}' >> /usr/local/etc/xray/config.json
 systemctl daemon-reload
-systemctl restart caddy
+systemctl enable caddy
 systemctl restart xray
