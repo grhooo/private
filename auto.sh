@@ -1,35 +1,37 @@
 #! /bin/sh
-## 修改DNS
+echo -e "\n\033[32;1m【 修改DNS 】\033[0m"
 sed -i 's/domain-name-servers, //' /etc/dhcp/dhclient.conf
 rm /etc/resolv.conf
 echo -e 'nameserver 8.8.8.8\nnameserver 180.76.76.76' >> /etc/resolv.conf
-## 修改ssh端口
+echo -e "\n\033[32;1m【 修改ssh端口 】\033[0m"
 if grep -q '^Port\s.*' /etc/ssh/sshd_config
 then
   sed -i 's/^Port\s.*/Port 27184/m' /etc/ssh/sshd_config
 else
   echo 'Port 27184' >> /etc/ssh/sshd_config
 fi
-## 安装caddy
+echo -e "\n\033[32;1m【 安装caddy 】\033[0m"
 wget -O /usr/bin/caddy https://caddyserver.com/api/download
 chmod 755 /usr/bin/caddy
 groupadd --system caddy
 wget -P /etc/systemd/system https://github.com/grhooo/private/raw/main/caddy.service
-## 安装xray
+echo -e "\n\033[32;1m【 安装xray 】\033[0m"
 wget -O /root/install.sh https://github.com/XTLS/Xray-install/raw/main/install-release.sh
 chmod u+x install.sh
 bash -c "$(cat /root/install.sh)" @ install --beta --without-geodata
-## xray权限
 sed -i 's/User=nobody/User=root/g' /etc/systemd/system/xray.service
 sed -i 's/CapabilityBoundingSet=/#CapabilityBoundingSet=/g' /etc/systemd/system/xray.service
 sed -i 's/AmbientCapabilities=/#AmbientCapabilities=/g' /etc/systemd/system/xray.service
-## 每天4:00,16:00更新版本
+echo -e "\n\033[32;1m【 每日4,16时检查更新 】\033[0m"
 timedatectl set-timezone Asia/Shanghai
 echo -e '0 4,16 * * * bash -c "$(cat /root/install.sh)" @ install --beta --without-geodata' >> /var/spool/cron/crontabs/root
-## 生成配置文件,下载证书
+echo -e "\033[33;1m【 crontab 】\033[0m"
+crontab -l
+echo -e "\n\033[32;1m【 配置caddy/xray 】\033[0m"
 mkdir /etc/caddy
 mkdir /usr/share/caddy
 echo -e ':8080 {\n  root * /usr/share/caddy\n  file_server\n}\nptbt.top:80 {\n  redir https://ptbt.top{uri}\n}' >> /etc/caddy/Caddyfile
+echo -e "\033[33;1m【 下载证书 】\033[0m"
 if ifconfig | grep -q 173.242
   then
     sed -i 's/ptbt/us.ptbt/m' /etc/caddy/Caddyfile
@@ -48,5 +50,7 @@ systemctl daemon-reload
 systemctl enable --now caddy
 systemctl restart xray
 rm -rf /var/log/xray
+echo -e "\n\033[32;1m【 caddy/xray运行情况 】\033[0m"
 systemctl | grep -E 'caddy|xray' --color=auto
+echo -e "\n\033[32;1m【 /etc/caddy/Caddyfile 】\033[0m"
 cat /etc/caddy/Caddyfile
