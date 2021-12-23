@@ -1,6 +1,12 @@
+function _do_ex()
+{
+  eval "$1" || { alert "exec failed: ""$1"; exit -1; }
+}
+_do_ex "statementA | statementB"
 ## 修改DNS
 sed -i 's/domain-name-servers, //' /etc/dhcp/dhclient.conf
-rm /etc/resolv.conf && echo -e 'nameserver 8.8.8.8\nnameserver 180.76.76.76' >> /etc/resolv.conf
+rm /etc/resolv.conf
+echo -e 'nameserver 8.8.8.8\nnameserver 180.76.76.76' >> /etc/resolv.conf
 ## 修改ssh端口
 if grep -q '^Port\s.*' /etc/ssh/sshd_config
 then
@@ -46,5 +52,5 @@ systemctl daemon-reload
 systemctl enable --now caddy
 systemctl restart xray
 rm -rf /var/log/xray
-systemctl | grep -E 'caddy|xray'
+systemctl | grep -E 'caddy|xray' --color=auto
 cat /etc/caddy/Caddyfile
