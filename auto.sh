@@ -1,8 +1,4 @@
-function _do_ex()
-{
-  eval "$1" || { alert "exec failed: ""$1"; exit -1; }
-}
-_do_ex "statementA | statementB"
+#! /bin/sh
 ## 修改DNS
 sed -i 's/domain-name-servers, //' /etc/dhcp/dhclient.conf
 rm /etc/resolv.conf
