@@ -14,7 +14,7 @@ wget -O /usr/bin/caddy https://caddyserver.com/api/download
 chmod 755 /usr/bin/caddy
 groupadd --system caddy
 wget -P /etc/systemd/system https://github.com/grhooo/private/raw/main/caddy.service
-echo -e "\n\033[32;1m【 安装xray 】\033[0m"
+echo -e "\033[32;1m【 安装xray 】\033[0m"
 wget -O /root/install.sh https://github.com/XTLS/Xray-install/raw/main/install-release.sh
 chmod u+x install.sh
 bash -c "$(cat /root/install.sh)" @ install --beta --without-geodata
