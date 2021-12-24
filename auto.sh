@@ -62,7 +62,7 @@ if [ "$input" = "yes" ] || [ "$input" = "y" ]
     chown _apt /etc/apt/trusted.gpg.d/xanmod-kernel.gpg
     apt update && apt -y install linux-xanmod
     sed -i '/net.core.default_qdisc/d' /etc/sysctl.conf
-    echo 'net.core.default_qdisc=fq_pie' >> /etc/sysctl.conf
+    echo net.core.default_qdisc=fq_pie >> /etc/sysctl.conf
     sysctl --system
   else
     exit 0
