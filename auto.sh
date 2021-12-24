@@ -29,19 +29,19 @@ crontab -l
 echo -e "\n\033[32;1m【 配置caddy/xray 】\033[0m"
 mkdir /etc/caddy
 mkdir /usr/share/caddy
-echo -e ':8080 {\n  root * /usr/share/caddy\n  file_server\n}\nptbt.top:80 {\n  redir https://ptbt.top{uri}\n}' > /etc/caddy/Caddyfile
+echo -e ':8080 {\n  root * /usr/share/caddy\n  file_server\n}\n'$HOSTNAME':80 {\n  redir https://'$HOSTNAME'{uri}\n}' > /etc/caddy/Caddyfile
 echo -e "\033[33;1m【 下载证书 】\033[0m"
-if ifconfig | grep -q 173.242
+if echo $HOSTNAME | grep -q us
   then
-    sed -i 's/ptbt/us.ptbt/m' /etc/caddy/Caddyfile
     wget -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/us/ptbt.crt https://github.com/grhooo/private/raw/main/cer/us/ptbt.key
-elif ifconfig | grep -q 45.78
+elif echo $HOSTNAME | grep -q jp
   then
-    sed -i 's/ptbt/jp.ptbt/m' /etc/caddy/Caddyfile
     wget -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/jp/ptbt.crt https://github.com/grhooo/private/raw/main/cer/jp/ptbt.key
-else
-  sed -i 's/ptbt/hk.ptbt/m' /etc/caddy/Caddyfile
-  wget -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/hk/ptbt.crt https://github.com/grhooo/private/raw/main/cer/hk/ptbt.key
+elif echo $HOSTNAME | grep -q hk
+  then
+    wget -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/hk/ptbt.crt https://github.com/grhooo/private/raw/main/cer/hk/ptbt.key
+  else 
+    echo -e '\e[31;5m 请手动下载证书至/usr/local/etc/xray！\e[0m'
 fi
 echo -e '{"log":{"access":"none","error":"none"},"inbounds":[{"port":443,"protocol":"vless","settings":{"clients":[{"id":"666b04c6-f7ae-43ec-96e2-e4b46a44c507","flow":"xtls-rprx-direct"}],"decryption":"none","fallbacks":[{"dest":8080}]},"streamSettings":{"network":"tcp","security":"xtls","xtlsSettings":{"alpn":["http/1.1"],"certificates":[{"certificateFile":"/usr/local/etc/xray/ptbt.crt","keyFile":"/usr/local/etc/xray/ptbt.key"}]}}}],"outbounds":[{"protocol":"freedom"}]}' > /usr/local/etc/xray/config.json
 systemctl daemon-reload
