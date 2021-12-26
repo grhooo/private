@@ -11,7 +11,8 @@ else
   if [ $? -eq 0 ]
     then
       hostnamectl set-hostname $input
-      echo -e ' \e[36;7m '$HOSTNAME' \e[0m'
+      echo -e ' \e[36;7m '$input' \e[0m  \e[31;5m须重启生效！请重启后再次运行本脚本。 \e[0m'
+      exit 1
   else
     echo -e '\e[31;5m 输入有误，请重新运行本脚本！ \e[0m'
     exit 1
