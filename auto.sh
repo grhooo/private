@@ -23,9 +23,6 @@ apt -y install dnsmasq
 mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
 echo -e 'no-resolv\nno-poll\nserver=8.8.8.8\nserver=1.1.1.1' > /etc/dnsmasq.conf
 cat /etc/dnsmasq.conf
-sed -i 's/domain-name-servers, //' /etc/dhcp/dhclient.conf
-echo 'nameserver 127.0.0.1' > /etc/resolv.conf
-cat /etc/resolv.conf
 echo -e "\n\e[32;7m【 修改ssh端口 】\e[0m"
 if grep -q '^Port\s.*' /etc/ssh/sshd_config
 then
@@ -77,3 +74,8 @@ echo -e "\n\e[32;7m【 caddy/xray运行情况 】\e[0m"
 systemctl | grep -E 'caddy|xray' --color=auto
 echo -e "\n\e[32;7m【 /etc/caddy/Caddyfile 】\e[0m"
 cat /etc/caddy/Caddyfile
+echo -e "\n\e[32;7m【 修改DNS服务器 】\e[0m"
+sed -i 's/domain-name-servers, //' /etc/dhcp/dhclient.conf
+echo 'nameserver 127.0.0.1' > /etc/resolv.conf
+echo -en "\n\e[33;1m 已修改为：\e[0m" && cat /etc/resolv.conf
+echo -en "\n\e[41;5m  服务器必须重启！ \e[0m"
