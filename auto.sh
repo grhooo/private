@@ -18,9 +18,13 @@ else
     exit 1
   fi
 fi
-echo -e "\n\e[32;7m【 修改DNS 】\e[0m"
+echo -e "\n\e[32;7m【 安装dnsmasq 】\e[0m"
+apt -y install dnsmasq
+mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
+echo -e 'no-resolv\nno-poll\nserver=8.8.8.8\nserver=1.1.1.1' > /etc/dnsmasq.conf
+cat /etc/dnsmasq.conf
 sed -i 's/domain-name-servers, //' /etc/dhcp/dhclient.conf
-echo -e 'nameserver 8.8.8.8\nnameserver 180.76.76.76' > /etc/resolv.conf
+echo 'nameserver 127.0.0.1' > /etc/resolv.conf
 cat /etc/resolv.conf
 echo -e "\n\e[32;7m【 修改ssh端口 】\e[0m"
 if grep -q '^Port\s.*' /etc/ssh/sshd_config
