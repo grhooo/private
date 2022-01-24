@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 echo -e "\n\e[32;7m【 检查HOSTNAME 】\e[0m"
 echo $HOSTNAME | egrep -q '^[a-z]{2}\.[bopt]{4}\.[bopt]{3}$'
 if [ $? -eq 0 ]
@@ -18,34 +18,22 @@ else
     exit 1
   fi
 fi
-echo -e "\n\e[32;7m【 安装dnsmasq 】\e[0m"
-apt -y install dnsmasq
-mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
-echo -e 'no-resolv\nno-poll\nserver=8.8.8.8\nserver=1.1.1.1' > /etc/dnsmasq.conf
-cat /etc/dnsmasq.conf
-echo -e "\n\e[32;7m【 修改ssh端口 】\e[0m"
-if grep -q '^Port\s.*' /etc/ssh/sshd_config
-then
-  sed -i 's/^Port\s.*/Port 27184/m' /etc/ssh/sshd_config
-else
-  echo 'Port 27184' >> /etc/ssh/sshd_config
-fi
-echo -en ' \e[36;7mSSH ' && cat /etc/ssh/sshd_config | grep '^Port\s.*' && echo -en '\e[0m'
 echo -e "\n\e[32;7m【 安装caddy 】\e[0m"
-wget -O /usr/bin/caddy https://caddyserver.com/api/download
+wget -t 5 -O /usr/bin/caddy https://caddyserver.com/api/download
 chmod 755 /usr/bin/caddy
 groupadd --system caddy
-wget -P /etc/systemd/system https://github.com/grhooo/private/raw/main/caddy.service
+wget -t 5 -P /etc/systemd/system https://github.com/grhooo/private/raw/main/caddy.service
 echo -e "\e[32;7m【 安装xray 】\e[0m"
-wget -O /root/install.sh https://github.com/XTLS/Xray-install/raw/main/install-release.sh
-chmod u+x install.sh
+wget -t 5 -O /root/install.sh https://github.com/XTLS/Xray-install/raw/main/install-release.sh
+wget -t 5 -O /root/install.sh https://github.com/grhooo/private/raw/main/rules.sh
+chmod +x /root/*.sh
 bash -c "$(cat /root/install.sh)" @ install --beta --without-geodata
-sed -i 's/User=nobody/User=root/g' /etc/systemd/system/xray.service
-sed -i 's/CapabilityBoundingSet=/#CapabilityBoundingSet=/g' /etc/systemd/system/xray.service
-sed -i 's/AmbientCapabilities=/#AmbientCapabilities=/g' /etc/systemd/system/xray.service
-echo -e "\n\e[32;7m【 每日4,16时检查更新 】\e[0m"
+sed -i -e 's/User=nobody/User=root/g' -e 's/CapabilityBoundingSet=/#CapabilityBoundingSet=/g' -e 's/AmbientCapabilities=/#AmbientCapabilities=/g' /etc/systemd/system/xray.service
+echo -e "\n\e[32;7m【 设置定时任务 】\e[0m"
 timedatectl set-timezone Asia/Shanghai
-echo -e '0 4,16 * * * bash -c "$(cat /root/install.sh)" @ install --beta --without-geodata' > /var/spool/cron/crontabs/root
+touch /root/cron.log
+echo -e '0 4,16 * * * /bin/bash -c "$(cat /root/install.sh)" @ install --beta --without-geodata\n0 */3 * * * /bin/bash /root/rules.sh\n0 7 * * * /bin/wget -t 5 -O /usr/share/caddy/rules.zip https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/rules.zip' > /var/spool/cron/crontabs/root
+sed -i 's#$# >> /root/cron.log 2>\&1#g' /var/spool/cron/crontabs/root
 echo -e "\e[33;1m【 crontab 】\e[0m"
 crontab -l
 echo -e "\n\e[32;7m【 配置caddy/xray 】\e[0m"
@@ -55,13 +43,13 @@ echo -e ':8080 {\n  root * /usr/share/caddy\n  file_server\n}\n'$HOSTNAME':80 {\
 echo -e "\e[33;1m【 下载证书 】\e[0m"
 if echo $HOSTNAME | grep -q us
   then
-    wget -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/us/ptbt.crt https://github.com/grhooo/private/raw/main/cer/us/ptbt.key
+    wget -t 5 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/us/ptbt.crt https://github.com/grhooo/private/raw/main/cer/us/ptbt.key
 elif echo $HOSTNAME | grep -q jp
   then
-    wget -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/jp/ptbt.crt https://github.com/grhooo/private/raw/main/cer/jp/ptbt.key
+    wget -t 5 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/jp/ptbt.crt https://github.com/grhooo/private/raw/main/cer/jp/ptbt.key
 elif echo $HOSTNAME | grep -q hk
   then
-    wget -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/hk/ptbt.crt https://github.com/grhooo/private/raw/main/cer/hk/ptbt.key
+    wget -t 5 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/hk/ptbt.crt https://github.com/grhooo/private/raw/main/cer/hk/ptbt.key
   else 
     echo -e '\e[31;5m 请手动下载证书至/usr/local/etc/xray！\e[0m'
 fi
@@ -70,12 +58,21 @@ systemctl daemon-reload
 systemctl enable --now caddy
 systemctl restart xray
 rm -rf /var/log/xray
+echo -e "\n\e[32;7m【 安装dnsmasq 】\e[0m"
+apt -y install dnsmasq
+mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
+echo -e 'no-resolv\nno-poll\ninterface=eth0\nbind-interfaces\nlisten-address=127.0.0.1\nserver=8.8.8.8\nserver=156.154.70.22\ncache-size=1000' > /etc/dnsmasq.conf
+cat /etc/dnsmasq.conf
+echo -e "\n\e[32;7m【 修改ssh端口 】\e[0m"
+if grep -q '^Port\s.*' /etc/ssh/sshd_config
+then
+  sed -i 's/^Port\s.*/Port 27184/m' /etc/ssh/sshd_config
+else
+  echo 'Port 27184' >> /etc/ssh/sshd_config
+fi
+echo -en ' \e[36;7mSSH ' && cat /etc/ssh/sshd_config | grep '^Port\s.*' && echo -en '\e[0m'
 echo -e "\n\e[32;7m【 caddy/xray运行情况 】\e[0m"
 systemctl | grep -E 'caddy|xray' --color=auto
 echo -e "\n\e[32;7m【 /etc/caddy/Caddyfile 】\e[0m"
 cat /etc/caddy/Caddyfile
-echo -e "\n\e[32;7m【 修改DNS服务器 】\e[0m"
-sed -i 's/domain-name-servers, //' /etc/dhcp/dhclient.conf
-echo 'nameserver 127.0.0.1' > /etc/resolv.conf
-echo -en "\n\e[33;1m 已修改为：\e[0m" && cat /etc/resolv.conf
 echo -en "\n\e[41;5m  服务器必须重启！ \e[0m"
