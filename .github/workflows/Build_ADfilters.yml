@@ -12,22 +12,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@main
 
-      - name: 下载广告过滤规则文件
+      - name: Initialization environment
+        env:
+         DEBIAN_FRONTEND: noninteractive
         run: |
           sudo timedatectl set-timezone "Asia/Shanghai"
-          sudo mkdir ./rules
-          sudo wget -t 3 -O rules/filters_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt
-          sudo wget -t 3 -O rules/badware_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/badware.txt
-          sudo wget -t 3 -O rules/privacy_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/privacy.txt
-          sudo wget -t 3 -O rules/abuse_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/resource-abuse.txt
-          sudo wget -t 3 -O rules/unbreak_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/unbreak.txt
-          sudo wget -t 3 -O rules/f2020_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters-2020.txt
-          sudo wget -t 3 -O rules/f2021_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters-2021.txt
-          sudo wget -t 3 -O rules/f2022_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters-2022.txt
-          sudo wget -t 3 -O rules/eprivacy_ https://easylist.to/easylist/easyprivacy.txt
-          sudo wget -t 3 -O rules/echina_ https://raw.githubusercontent.com/easylist/easylistchina/master/easylistchina.txt
-          sudo wget -t 3 -O rules/cjx_ https://raw.githubusercontent.com/cjx82630/cjxlist/master/cjx-annoyance.txt
-          sudo wget -t 3 -O rules/xinggsf_ https://raw.githubusercontent.com/xinggsf/Adblock-Plus-Rule/master/rule.txt
+          sudo mkdir /rules
+          sudo chown $USER:$GROUPS /rules
+
+      - name: 下载广告过滤规则文件
+        run: |
+          cd rules
+          wget -t 3 -O rules/filters_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt
+          wget -t 3 -O rules/badware_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/badware.txt
+          wget -t 3 -O rules/privacy_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/privacy.txt
+          wget -t 3 -O rules/abuse_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/resource-abuse.txt
+          wget -t 3 -O rules/unbreak_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/unbreak.txt
+          wget -t 3 -O rules/f2020_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters-2020.txt
+          wget -t 3 -O rules/f2021_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters-2021.txt
+          wget -t 3 -O rules/f2022_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters-2022.txt
+          wget -t 3 -O rules/eprivacy_ https://easylist.to/easylist/easyprivacy.txt
+          wget -t 3 -O rules/echina_ https://raw.githubusercontent.com/easylist/easylistchina/master/easylistchina.txt
+          wget -t 3 -O rules/cjx_ https://raw.githubusercontent.com/cjx82630/cjxlist/master/cjx-annoyance.txt
+          wget -t 3 -O rules/xinggsf_ https://raw.githubusercontent.com/xinggsf/Adblock-Plus-Rule/master/rule.txt
 
       - name: 新建空白规则合集,生成日期版本号
         run: |
@@ -39,7 +46,7 @@ jobs:
       - name: 合并规则文件,并清理内容重复的行,压缩打包
         run: |
           cat rules/*_ | sort | uniq >> rules/0.txt
-          tar zcvf rules/rules.tar.gz rules/0.txt  - name: Upload Artifact
+          tar zcvf rules/rules.tar.gz rules/0.txt
 
       - name: 上传压缩包
         uses: actions/upload-artifact@main
