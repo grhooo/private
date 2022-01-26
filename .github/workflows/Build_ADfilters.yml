@@ -41,6 +41,8 @@ jobs:
           sed -i -e '/^!/d' -e '/^\s*$/d' *_
           cat *_ | sort | uniq > 0.txt
           echo -e "! Title: 广告过滤规则合集\n! Version: `date +"%y.%m.%d-%H"`\n! Description: uBlock + EasylistChina + EasyPrivacy + CJX'sAnnoyanceList + 乘风规则  [规则数:`cat 0.txt | wc -l`]" >> 0.txt
+          tar -zcvf rules.tar.gz 0.txt
+          cp rules.tar.gz $GITHUB_WORKSPACE
 
       - name: Upload
         uses: actions/upload-artifact@main
@@ -48,9 +50,3 @@ jobs:
           name: rules
           path: /rules/0.txt
           retention-days: 1
-
-      - name: Load custom feeds
-        run: |
-          tar -zcvf rules.tar.gz 0.txt
-          mv rules.tar.gz $GITHUB_WORKSPACE
-
