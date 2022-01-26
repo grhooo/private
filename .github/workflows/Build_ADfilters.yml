@@ -48,7 +48,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag: $DATE
+          tag_name: $DATE
           files: rules.tar.gz
 
       - name: Delete older Releases
