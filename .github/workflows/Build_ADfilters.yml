@@ -49,4 +49,4 @@ jobs:
           DROPBOX_TOKEN: ${{ secrets.DROPBOX_TOKEN }}
         with:
           src_file: rules.tar.gz
-          dst_file: /devel/rules.tar.gz
+          dst_file: ./rules.tar.gz
