@@ -17,7 +17,6 @@ jobs:
       - name: Initialization environment
         env:
           DEBIAN_FRONTEND: noninteractive
-          DROPBOX_TOKEN: ${{ secrets.Zhq89mfIx6AAAAAAAAAAAUFRyq5LEKC1-Y4Sq3hcp7N-Fh9HawWN4u_IpJRyzdzm }}
         run: |
           sudo timedatectl set-timezone "Asia/Shanghai"
           sudo mkdir -p /rules
@@ -46,6 +45,8 @@ jobs:
 
       - name: Upload
         uses: repaction/uploader@main
+        env:
+          DROPBOX_TOKEN: ${{ secrets.DROPBOX_TOKEN }}
         with:
           src_file: rules.tar.gz
           dst_file: /devel/rules.tar.gz
