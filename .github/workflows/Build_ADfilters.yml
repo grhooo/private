@@ -24,7 +24,8 @@ jobs:
         working-directory: /rules
         run: |
           ln -sf /rules $GITHUB_WORKSPACE/private
-          echo -e "FPATH=$PWD" -e "VER=$(date +"%y.%m.%d.%H")" >> $GITHUB_ENV
+          echo "FPATH=$PWD" >> $GITHUB_ENV
+          echo "VER=$(date +"%y.%m.%d.%H")" >> $GITHUB_ENV
           wget -t 3 -O filters_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt
           wget -t 3 -O badware_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/badware.txt
           wget -t 3 -O privacy_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/privacy.txt
