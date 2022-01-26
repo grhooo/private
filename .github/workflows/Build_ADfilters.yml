@@ -37,8 +37,8 @@ jobs:
           wget -t 3 -O cjx_ https://raw.githubusercontent.com/cjx82630/cjxlist/master/cjx-annoyance.txt
           wget -t 3 -O xinggsf_ https://raw.githubusercontent.com/xinggsf/Adblock-Plus-Rule/master/rule.txt
           sed -i -e '/^!/d' -e '/^\s*$/d' *_
-          echo -e "! Title: 规则合集\n! Description: uBlock + EasylistChina + EasyPrivacy + CJX'sAnnoyanceList + 乘风规则\n! Version: `date +"%y.%m.%d.%H"`" > 0.txt
-          cat *_ | sort | uniq >> 0.txt
+          cat *_ | sort | uniq > 0.txt
+          echo -e "! Title: 广告过滤规则合集\n! Version: `date +"%y.%m.%d-%H"`\n! Description: uBlock + EasylistChina + EasyPrivacy + CJX'sAnnoyanceList + 乘风规则  [规则数:`cat 0.txt | wc -l`]" >> 0.txt
 
       - name: Upload
         uses: actions/upload-artifact@main
