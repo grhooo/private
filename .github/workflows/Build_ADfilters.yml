@@ -41,7 +41,7 @@ jobs:
           echo -e "! Title: 规则合集\n! Description: uBlock + EasylistChina + EasyPrivacy + CJX'sAnnoyanceList + 乘风规则\n! Version: `date +"%y.%m.%d.%H"`" > 0.txt
 
       - name: 删除规则文件中以!开头的行及空行
-        run: sed -i -e '/^!/d' -e '/^\s*$/d' *_
+        run: sed -i -e '/^!/d' -e '/^\s*$/d' ./*_
 
       - name: 合并规则文件,并清理内容重复的行,压缩打包
         run: |
