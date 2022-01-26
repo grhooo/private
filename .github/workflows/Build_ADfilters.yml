@@ -25,7 +25,6 @@ jobs:
       - name: Build
         working-directory: /rules
         run: |
-          ln -sf /rules $GITHUB_WORKSPACE
           wget -t 3 -O filters_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt
           wget -t 3 -O badware_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/badware.txt
           wget -t 3 -O privacy_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/privacy.txt
@@ -45,12 +44,11 @@ jobs:
 
       - name: Upload to Releases
         uses: softprops/action-gh-release@v0.1.14
-        working-directory: /rules
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: -
-          body_path: -
+          tag_name: 1
+          body_path: 1
           files: rules.tar.gz
 
       - name: Delete older Releases
