@@ -41,7 +41,7 @@ jobs:
           sed -i -e '/^!/d' -e '/^\s*$/d' *_
           cat *_ | sort | uniq > 0.txt
           echo -e "! Title: 广告过滤规则合集\n! Version: `date +"%y.%m.%d-%H"`\n! Description: uBlock + EasylistChina + EasyPrivacy + CJX'sAnnoyanceList + 乘风规则  [规则数:`cat 0.txt | wc -l`]" >> 0.txt
-          echo -e "Title: 广告过滤规则合集\nVersion: `date +"%y.%m.%d-%H"`\nuBlock + EasylistChina + EasyPrivacy + CJX'sAnnoyanceList + 乘风规则   [ 规则数:`cat 0.txt | wc -l` ]" > release.txt
+          echo -e "广告过滤规则合集\nVer: `date +"%y.%m.%d-%H"`\nuBlock + EasylistChina + EasyPrivacy + CJX'sAnnoyanceList + 乘风规则    [ 规则数:`cat 0.txt | wc -l` ]" > release.txt
           tar -zcvf rules.tar.gz 0.txt
 
       - name: Upload New Releases
