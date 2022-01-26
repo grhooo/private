@@ -16,18 +16,18 @@ jobs:
         run: |
           sudo timedatectl set-timezone "Asia/Shanghai"
           sudo mkdir ./rules
-          wget -t 3 -O rules/filters_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt
-          wget -t 3 -O rules/badware_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/badware.txt
-          wget -t 3 -O rules/privacy_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/privacy.txt
-          wget -t 3 -O rules/abuse_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/resource-abuse.txt
-          wget -t 3 -O rules/unbreak_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/unbreak.txt
-          wget -t 3 -O rules/f2020_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters-2020.txt
-          wget -t 3 -O rules/f2021_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters-2021.txt
-          wget -t 3 -O rules/f2022_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters-2022.txt
-          wget -t 3 -O rules/eprivacy_ https://easylist.to/easylist/easyprivacy.txt
-          wget -t 3 -O rules/echina_ https://raw.githubusercontent.com/easylist/easylistchina/master/easylistchina.txt
-          wget -t 3 -O rules/cjx_ https://raw.githubusercontent.com/cjx82630/cjxlist/master/cjx-annoyance.txt
-          wget -t 3 -O rules/xinggsf_ https://raw.githubusercontent.com/xinggsf/Adblock-Plus-Rule/master/rule.txt
+          sudo wget -t 3 -O rules/filters_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt
+          sudo wget -t 3 -O rules/badware_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/badware.txt
+          sudo wget -t 3 -O rules/privacy_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/privacy.txt
+          sudo wget -t 3 -O rules/abuse_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/resource-abuse.txt
+          sudo wget -t 3 -O rules/unbreak_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/unbreak.txt
+          sudo wget -t 3 -O rules/f2020_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters-2020.txt
+          sudo wget -t 3 -O rules/f2021_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters-2021.txt
+          sudo wget -t 3 -O rules/f2022_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters-2022.txt
+          sudo wget -t 3 -O rules/eprivacy_ https://easylist.to/easylist/easyprivacy.txt
+          sudo wget -t 3 -O rules/echina_ https://raw.githubusercontent.com/easylist/easylistchina/master/easylistchina.txt
+          sudo wget -t 3 -O rules/cjx_ https://raw.githubusercontent.com/cjx82630/cjxlist/master/cjx-annoyance.txt
+          sudo wget -t 3 -O rules/xinggsf_ https://raw.githubusercontent.com/xinggsf/Adblock-Plus-Rule/master/rule.txt
 
       - name: 新建空白规则合集,生成日期版本号
         run: |
