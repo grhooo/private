@@ -16,15 +16,17 @@ jobs:
 
       - name: Initialization environment
         env:
-         DEBIAN_FRONTEND: noninteractive
+          DEBIAN_FRONTEND: noninteractive
+          DROPBOX_TOKEN: ${{ secrets.Zhq89mfIx6AAAAAAAAAAAUFRyq5LEKC1-Y4Sq3hcp7N-Fh9HawWN4u_IpJRyzdzm }}
         run: |
           sudo timedatectl set-timezone "Asia/Shanghai"
-          sudo mkdir /rules
+          sudo mkdir -p /rules
           sudo chown $USER:$GROUPS /rules
 
-      - name: Building
+      - name: Build
         working-directory: /rules
         run: |
+          ln -sf /rules $GITHUB_WORKSPACE
           wget -t 3 -O filters_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt
           wget -t 3 -O badware_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/badware.txt
           wget -t 3 -O privacy_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/privacy.txt
@@ -41,4 +43,9 @@ jobs:
           cat *_ | sort | uniq > 0.txt
           echo -e "! Title: 广告过滤规则合集\n! Version: `date +"%y.%m.%d-%H"`\n! Description: uBlock + EasylistChina + EasyPrivacy + CJX'sAnnoyanceList + 乘风规则  [规则数:`cat 0.txt | wc -l`]" >> 0.txt
           tar -zcvf rules.tar.gz 0.txt
-          mv rules.tar.gz $GITHUB_WORKSPACE
+
+      - name: Upload
+        uses: repaction/uploader@main
+        with:
+          src_file: rules.tar.gz
+          dst_file: ./rules.tar.gz
