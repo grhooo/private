@@ -15,7 +15,7 @@ jobs:
       - name: 下载广告过滤规则文件
         run: |
           sudo timedatectl set-timezone "Asia/Shanghai"
-          sudo mkdir /rules
+          sudo mkdir ./rules
           wget -t 3 -O rules/filters_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt
           wget -t 3 -O rules/badware_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/badware.txt
           wget -t 3 -O rules/privacy_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/privacy.txt
