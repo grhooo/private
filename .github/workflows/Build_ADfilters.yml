@@ -19,7 +19,7 @@ jobs:
          DEBIAN_FRONTEND: noninteractive
         run: |
           sudo timedatectl set-timezone "Asia/Shanghai"
-          sudo mkdir -p /rules
+          sudo mkdir /rules
           sudo chown $USER:$GROUPS /rules
 
       - name: Building
