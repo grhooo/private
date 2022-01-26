@@ -43,10 +43,24 @@ jobs:
           echo -e "! Title: 广告过滤规则合集\n! Version: `date +"%y.%m.%d-%H"`\n! Description: uBlock + EasylistChina + EasyPrivacy + CJX'sAnnoyanceList + 乘风规则  [规则数:`cat 0.txt | wc -l`]" >> 0.txt
           tar -zcvf rules.tar.gz 0.txt
 
-      - name: Upload
-        uses: repaction/uploader@main
+      - name: Upload to Releases
+        uses: softprops/action-gh-release@main
         env:
-          DROPBOX_TOKEN: ${{ secrets.DROPBOX_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          src_file: rules.tar.gz
-          dst_file: /rules.tar.gz
+          tag_name: echo `date +"%y.%m.%d-%H"`
+          files: rules.tar.gz
+
+      - name: Remove old Releases
+        uses: dev-drprasad/delete-older-releases@main
+        with:
+          keep_latest: 3
+          delete_tags: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete workflow runs
+        uses: GitRML/delete-workflow-runs@main
+        with:
+          retain_days: 1
+          keep_minimum_runs: 3
