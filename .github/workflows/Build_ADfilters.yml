@@ -1,11 +1,16 @@
 name: Build ADfilters
 
+on:
+  repository_dispatch:
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@main
+      - name: Checkout
+        uses: actions/checkout@main
 
       - name: 下载广告过滤规则文件
         run: |
@@ -25,7 +30,8 @@ jobs:
           wget -t 3 -O rules/xinggsf_ https://raw.githubusercontent.com/xinggsf/Adblock-Plus-Rule/master/rule.txt
 
       - name: 新建空白规则合集,生成日期版本号
-        run: echo -e "! Title: 规则合集\n! Description: uBlock + EasylistChina + EasyPrivacy + CJX'sAnnoyanceList + 乘风规则\n! Version: `date +"%y.%m.%d.%H"`" > rules/0.txt
+        run: |
+          echo -e "! Title: 规则合集\n! Description: uBlock + EasylistChina + EasyPrivacy + CJX'sAnnoyanceList + 乘风规则\n! Version: `date +"%y.%m.%d.%H"`" > rules/0.txt
 
       - name: 删除规则文件中以!开头的行及空行
         run: sed -i -e '/^!/d' -e '/^\s*$/d' rules/*_
@@ -33,12 +39,11 @@ jobs:
       - name: 合并规则文件,并清理内容重复的行,压缩打包
         run: |
           cat rules/*_ | sort | uniq >> rules/0.txt
-          tar zcvf rules/rules.tar.gz rules/0.txt
-          echo "VER=_$(date +"%y.%m.%d.%H")" >> $GITHUB_ENV
+          tar zcvf rules/rules.tar.gz rules/0.txt  - name: Upload Artifact
 
       - name: 上传压缩包
-      - uses: actions/upload-artifact@main
-          with:
-            name: ADfilters${{ env.VER }}
-            path: rules/rules.tar.gz
-            retention-days: 1
+        uses: actions/upload-artifact@main
+        with:
+          name: ADfilters${{ env.VER }}
+          path: rules/rules.tar.gz
+          retention-days: 1
