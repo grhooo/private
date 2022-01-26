@@ -22,7 +22,7 @@ jobs:
           sudo mkdir -p /rules
           sudo chown $USER:$GROUPS /rules
 
-      - name: Working……
+      - name: Working
         working-directory: /rules
         run: |
           ln -sf /rules $GITHUB_WORKSPACE/private
@@ -41,6 +41,13 @@ jobs:
           sed -i -e '/^!/d' -e '/^\s*$/d' *_
           cat *_ | sort | uniq > 0.txt
           echo -e "! Title: 广告过滤规则合集\n! Version: `date +"%y.%m.%d-%H"`\n! Description: uBlock + EasylistChina + EasyPrivacy + CJX'sAnnoyanceList + 乘风规则  [规则数:`cat 0.txt | wc -l`]" >> 0.txt
+
+      - name: Upload
+        uses: actions/upload-artifact@main
+        with:
+          name: rules
+          path: /rules/0.txt
+          retention-days: 1
 
       - name: Download
         uses: actions/download-artifact@main
