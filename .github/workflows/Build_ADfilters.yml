@@ -42,7 +42,8 @@ jobs:
           cat *_ | sort | uniq > 0.txt
           echo -e "! Title: 广告过滤规则合集\n! Version: `date +"%y.%m.%d-%H"`\n! Description: uBlock + EasylistChina + EasyPrivacy + CJX'sAnnoyanceList + 乘风规则  [规则数:`cat 0.txt | wc -l`]" >> 0.txt
           tar -zcvf rules.tar.gz 0.txt
-          cp rules.tar.gz $GITHUB_WORKSPACE
+          ln -sf $GITHUB_WORKSPACE/private /rules
+          mv rules.tar.gz $GITHUB_WORKSPACE/private
 
       - name: Upload
         uses: actions/upload-artifact@main
