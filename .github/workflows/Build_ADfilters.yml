@@ -20,10 +20,11 @@ jobs:
           sudo mkdir -p /rules
           sudo chown $USER:$GROUPS /rules
 
-      - name: 下载广告过滤规则文件
+      - name: Working……
         working-directory: /rules
         run: |
           ln -sf /rules $GITHUB_WORKSPACE/private
+          echo -e "FPATH=$PWD" -e "VER=$(date +"%y.%m.%d.%H")" >> $GITHUB_ENV
           wget -t 3 -O filters_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt
           wget -t 3 -O badware_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/badware.txt
           wget -t 3 -O privacy_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/privacy.txt
@@ -36,22 +37,14 @@ jobs:
           wget -t 3 -O echina_ https://raw.githubusercontent.com/easylist/easylistchina/master/easylistchina.txt
           wget -t 3 -O cjx_ https://raw.githubusercontent.com/cjx82630/cjxlist/master/cjx-annoyance.txt
           wget -t 3 -O xinggsf_ https://raw.githubusercontent.com/xinggsf/Adblock-Plus-Rule/master/rule.txt
-
-      - name: 新建空白规则合集,生成日期版本号
-        run: |
-          echo -e "! Title: 规则合集\n! Description: uBlock + EasylistChina + EasyPrivacy + CJX'sAnnoyanceList + 乘风规则\n! Version: `date +"%y.%m.%d.%H"`" > 0.txt
-
-      - name: 删除规则文件中以!开头的行及空行
-        run: sed -i -e '/^!/d' -e '/^\s*$/d' *_
-
-      - name: 合并规则文件,并清理内容重复的行,压缩打包
-        run: |
+          sed -i -e '/^!/d' -e '/^\s*$/d' *_
+          echo -e "! Title: 规则合集\n! Description: uBlock + EasylistChina + EasyPrivacy + CJX'sAnnoyanceList + 乘风规则\n! Version: ${{ env.VER }}" > 0.txt
           cat *_ | sort | uniq >> 0.txt
           tar zcvf rules.tar.gz 0.txt
 
-      - name: 上传压缩包
+      - name: Upload
         uses: actions/upload-artifact@main
         with:
-          name: ADfilters${{ env.VER }}
-          path: rules.tar.gz
+          name: ADfilters-${{ env.VER }}
+          path: ${{ env.FPATH }}/rules.tar.gz
           retention-days: 1
