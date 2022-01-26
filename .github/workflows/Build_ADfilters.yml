@@ -21,6 +21,7 @@ jobs:
           sudo chown $USER:$GROUPS /rules
 
       - name: 下载广告过滤规则文件
+        working-directory: /rules
         run: |
           cd rules
           wget -t 3 -O rules/filters_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt
