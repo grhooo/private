@@ -41,8 +41,8 @@ jobs:
           sed -i -e '/^!/d' -e '/^\s*$/d' *_
           cat *_ | sort | uniq > 0.txt
           echo -e "! Title: 广告过滤规则合集\n! Version: `date +"%y.%m.%d-%H"`\n! Description: uBlock + EasylistChina + EasyPrivacy + CJX'sAnnoyanceList + 乘风规则  [规则数:`cat 0.txt | wc -l`]" >> 0.txt
-          tar -zcvf rules.tar.gz 0.txt
           echo -e "! Title: 广告过滤规则合集\n! Version: `date +"%y.%m.%d-%H"`\n! Description: uBlock + EasylistChina + EasyPrivacy + CJX'sAnnoyanceList + 乘风规则  [规则数:`cat 0.txt | wc -l`]" > release.txt
+          tar -zcvf rules.tar.gz 0.txt
 
       - name: Upload New Releases
         uses: softprops/action-gh-release@v0.1.14
@@ -50,7 +50,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v1.0
-          body_path: release.txt
+          body_path: ${{ env.DIR }}/release.txt
           files: ${{ env.DIR }}/rules.tar.gz
 
       - name: Delete older Releases
