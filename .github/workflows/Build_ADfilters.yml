@@ -22,7 +22,7 @@ jobs:
           sudo mkdir -p /rules
           sudo chown $USER:$GROUPS /rules
 
-      - name: Working
+      - name: Building
         working-directory: /rules
         run: |
           ln -sf /rules $GITHUB_WORKSPACE/private
@@ -49,8 +49,8 @@ jobs:
           path: /rules/0.txt
           retention-days: 1
 
-      - name: Download
-        uses: actions/download-artifact@main
-        with:
-          name: rules
-          path: /rules/0.txt
+      - name: Load custom feeds
+        run: |
+          tar -zcvf rules.tar.gz 0.txt
+          mv rules.tar.gz $GITHUB_WORKSPACE
+
