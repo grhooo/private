@@ -24,8 +24,6 @@ jobs:
         working-directory: /rules
         run: |
           ln -sf /rules $GITHUB_WORKSPACE/private
-          echo "FPATH=$PWD" >> $GITHUB_ENV
-          echo "VER=$(date +"%y.%m.%d.%H")" >> $GITHUB_ENV
           wget -t 3 -O filters_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt
           wget -t 3 -O badware_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/badware.txt
           wget -t 3 -O privacy_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/privacy.txt
@@ -39,13 +37,12 @@ jobs:
           wget -t 3 -O cjx_ https://raw.githubusercontent.com/cjx82630/cjxlist/master/cjx-annoyance.txt
           wget -t 3 -O xinggsf_ https://raw.githubusercontent.com/xinggsf/Adblock-Plus-Rule/master/rule.txt
           sed -i -e '/^!/d' -e '/^\s*$/d' *_
-          echo -e "! Title: 规则合集\n! Description: uBlock + EasylistChina + EasyPrivacy + CJX'sAnnoyanceList + 乘风规则\n! Version: ${{ env.VER }}" > 0.txt
+          echo -e "! Title: 规则合集\n! Description: uBlock + EasylistChina + EasyPrivacy + CJX'sAnnoyanceList + 乘风规则\n! Version: `date +"%y.%m.%d.%H"`" > 0.txt
           cat *_ | sort | uniq >> 0.txt
-          tar zcvf rules.tar.gz 0.txt
 
       - name: Upload
         uses: actions/upload-artifact@main
         with:
-          name: ADfilters-${{ env.VER }}
-          path: ${{ env.FPATH }}/rules.tar.gz
+          name: rules
+          path: /rules/0.txt
           retention-days: 1
