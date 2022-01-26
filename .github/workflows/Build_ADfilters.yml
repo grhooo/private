@@ -23,7 +23,7 @@ jobs:
       - name: 下载广告过滤规则文件
         working-directory: /work
         run: |
-          mkdir /rules && cd rules
+          sudo mkdir /rules && cd rules
           wget -t 3 -O filters_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt
           wget -t 3 -O badware_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/badware.txt
           wget -t 3 -O privacy_ https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/privacy.txt
