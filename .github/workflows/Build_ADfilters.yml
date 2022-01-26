@@ -48,4 +48,4 @@ jobs:
         uses: repaction/uploader@main
         with:
           src_file: rules.tar.gz
-          dst_file: ./rules.tar.gz
+          dst_file: /devel/rules.tar.gz
