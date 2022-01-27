@@ -18,38 +18,43 @@ else
     exit 1
   fi
 fi
+
 echo -e "\n\e[32;7m【 安装caddy 】\e[0m"
-wget -t 5 -O /usr/bin/caddy https://caddyserver.com/api/download
+wget -t3 -O /usr/bin/caddy https://caddyserver.com/api/download
 chmod 755 /usr/bin/caddy
 groupadd --system caddy
-wget -t 5 -P /etc/systemd/system https://github.com/grhooo/private/raw/main/caddy.service
+wget -t3 -P /etc/systemd/system https://github.com/grhooo/private/raw/main/caddy.service
+
 echo -e "\e[32;7m【 安装xray 】\e[0m"
-wget -t 5 -O /root/install.sh https://github.com/XTLS/Xray-install/raw/main/install-release.sh
-wget -t 5 -O /root/install.sh https://github.com/grhooo/private/raw/main/rules.sh
+wget -t3 -O /root/install.sh https://github.com/XTLS/Xray-install/raw/main/install-release.sh
 chmod +x /root/*.sh
 bash -c "$(cat /root/install.sh)" @ install --beta --without-geodata
 sed -i -e 's/User=nobody/User=root/g' -e 's/CapabilityBoundingSet=/#CapabilityBoundingSet=/g' -e 's/AmbientCapabilities=/#AmbientCapabilities=/g' /etc/systemd/system/xray.service
+
 echo -e "\n\e[32;7m【 设置定时任务 】\e[0m"
 timedatectl set-timezone Asia/Shanghai
-touch /root/cron.log
-echo -e '0 4,16 * * * /bin/bash -c "$(cat /root/install.sh)" @ install --beta --without-geodata\n0 */3 * * * /bin/bash /root/rules.sh\n0 7 * * * /bin/wget -t 5 -O /usr/share/caddy/rules.zip https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/rules.zip' > /var/spool/cron/crontabs/root
-sed -i 's#$# >> /root/cron.log 2>\&1#g' /var/spool/cron/crontabs/root
+echo '0 4,16 * * * /bin/bash -c "$(cat /root/install.sh)" @ install --beta --without-geodata' > /var/spool/cron/crontabs/root
+echo '0 7 * * * /bin/wget -t3 -O /usr/share/caddy/geo.zip https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/rules.zip' >> /var/spool/cron/crontabs/root
+echo '0 6-21/3 * * * /bin/wget -t3 -O /usr/share/caddy/rules.tar.gz https://github.com/grhooo/private/releases/download/ADfilters/rules.tar.gz && /bin/tar -xf /usr/share/caddy/rules.tar.gz -C /usr/share/caddy && /bin/rm /usr/share/caddy/rules.tar.gz' >> /var/spool/cron/crontabs/root
+sed -i 's#$# 2>> /root/err.log#g' /var/spool/cron/crontabs/root
 echo -e "\e[33;1m【 crontab 】\e[0m"
 crontab -l
+
 echo -e "\n\e[32;7m【 配置caddy/xray 】\e[0m"
 mkdir /etc/caddy
 mkdir /usr/share/caddy
 echo -e ':8080 {\n  root * /usr/share/caddy\n  file_server\n}\n'$HOSTNAME':80 {\n  redir https://'$HOSTNAME'{uri}\n}' > /etc/caddy/Caddyfile
+
 echo -e "\e[33;1m【 下载证书 】\e[0m"
 if echo $HOSTNAME | grep -q us
   then
-    wget -t 5 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/us/ptbt.crt https://github.com/grhooo/private/raw/main/cer/us/ptbt.key
+    wget -t3 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/us/ptbt.{crt,key}
 elif echo $HOSTNAME | grep -q jp
   then
-    wget -t 5 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/jp/ptbt.crt https://github.com/grhooo/private/raw/main/cer/jp/ptbt.key
+    wget -t3 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/jp/ptbt.{crt,key}
 elif echo $HOSTNAME | grep -q hk
   then
-    wget -t 5 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/hk/ptbt.crt https://github.com/grhooo/private/raw/main/cer/hk/ptbt.key
+    wget -t3 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/hk/ptbt.{crt,key}
   else 
     echo -e '\e[31;5m 请手动下载证书至/usr/local/etc/xray！\e[0m'
 fi
@@ -58,11 +63,13 @@ systemctl daemon-reload
 systemctl enable --now caddy
 systemctl restart xray
 rm -rf /var/log/xray
+
 echo -e "\n\e[32;7m【 安装dnsmasq 】\e[0m"
 apt -y install dnsmasq
 mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
-echo -e 'no-resolv\nno-poll\ninterface=eth0\nbind-interfaces\nlisten-address=127.0.0.1\nserver=8.8.8.8\nserver=156.154.70.22\ncache-size=1000' > /etc/dnsmasq.conf
+echo -e 'no-resolv\nno-poll\ninterface=eth0\nbind-interfaces\nlisten-address=127.0.0.1\nserver=8.8.8.8\nserver=156.154.70.22\ncache-size=1500' > /etc/dnsmasq.conf
 cat /etc/dnsmasq.conf
+
 echo -e "\n\e[32;7m【 修改ssh端口 】\e[0m"
 if grep -q '^Port\s.*' /etc/ssh/sshd_config
 then
@@ -71,6 +78,7 @@ else
   echo 'Port 27184' >> /etc/ssh/sshd_config
 fi
 echo -en ' \e[36;7mSSH ' && cat /etc/ssh/sshd_config | grep '^Port\s.*' && echo -en '\e[0m'
+
 echo -e "\n\e[32;7m【 caddy/xray运行情况 】\e[0m"
 systemctl | grep -E 'caddy|xray' --color=auto
 echo -e "\n\e[32;7m【 /etc/caddy/Caddyfile 】\e[0m"
