@@ -35,7 +35,7 @@ echo -e "\n\e[32;7m【 设置定时任务 】\e[0m"
 timedatectl set-timezone Asia/Shanghai
 echo '0 4,16 * * * /bin/bash -c "$(cat /root/install.sh)" @ install --beta --without-geodata' > /var/spool/cron/crontabs/root
 echo '0 7 * * * /bin/wget -t3 -O /usr/share/caddy/geo.zip https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/rules.zip' >> /var/spool/cron/crontabs/root
-echo '0 6-21/3 * * * /bin/wget -t3 -P /usr/share/caddy https://github.com/grhooo/adfilters/releases/latest/download/rules.tar.gz && /bin/tar -xf /usr/share/caddy/rules.tar.gz -C /usr/share/caddy' >> /var/spool/cron/crontabs/root
+echo '0 6-21/3 * * * /bin/wget -t3 -O /usr/share/caddy/rules.tar.gz https://github.com/grhooo/adfilters/releases/latest/download/rules.tar.gz && /bin/tar -xf /usr/share/caddy/rules.tar.gz -C /usr/share/caddy' >> /var/spool/cron/crontabs/root
 sed -i 's#$# 2>> /root/err.log#g' /var/spool/cron/crontabs/root
 echo -e "\e[33;1m【 crontab 】\e[0m"
 crontab -l
