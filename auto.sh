@@ -1,4 +1,6 @@
 #!/bin/sh
+echo -e "alias up='apt update && apt -y upgrade'\nalias cl='apt autoremove && apt autoclean'\nalias ain='apt install'\nalias are='apt remove'\nalias cls='clear'\n\n. /usr/share/bash-completion/bash_completion" >> .bashrc
+. .bashrc
 echo -e "\n\e[32;7m【 检查HOSTNAME 】\e[0m"
 echo $HOSTNAME | egrep -q '^[a-z]{2}\.[bopt]{4}\.[bopt]{3}$'
 if [ $? -eq 0 ]
@@ -67,7 +69,7 @@ rm -rf /var/log/xray
 echo -e "\n\e[32;7m【 安装dnsmasq 】\e[0m"
 apt -y install dnsmasq
 mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
-echo -e 'no-resolv\nno-poll\ninterface=eth0\nbind-interfaces\nlisten-address=127.0.0.1\nserver=8.8.8.8\nserver=156.154.70.22\ncache-size=1500' > /etc/dnsmasq.conf
+echo -e 'no-resolv\nno-poll\ninterface=eth0\nbind-interfaces\nlisten-address=127.0.0.1\nserver=8.8.8.8\nserver=1.1.1.1\ncache-size=1500' > /etc/dnsmasq.conf
 cat /etc/dnsmasq.conf
 
 echo -e "\n\e[32;7m【 修改ssh端口 】\e[0m"
