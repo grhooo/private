@@ -1,5 +1,6 @@
 #!/bin/sh
-echo -e "alias up='apt update && apt -y upgrade'\nalias cl='apt autoremove && apt autoclean'\nalias ain='apt install'\nalias are='apt remove'\nalias cls='clear'\n. /usr/share/bash-completion/bash_completion" >> /root/.bashrc
+echo -e 'set linenumbers\nset mouse\nset softwrap' >> /etc/nanorc
+echo -e "alias up='apt update && apt -y upgrade'\nalias cl='apt autoremove && apt autoclean'\nalias ain='apt install'\nalias are='apt remove'\nalias cls='clear'\nalias ..='. /usr/share/bash-completion/bash_completion'" >> /root/.bashrc
 echo -e "\n\e[32;7m【 检查HOSTNAME 】\e[0m"
 echo $HOSTNAME | egrep -q '^[a-z]{2}\.[bopt]{4}\.[bopt]{3}$'
 if [ $? -eq 0 ]
