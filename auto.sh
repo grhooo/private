@@ -1,6 +1,18 @@
 #!/bin/sh
 echo -e 'set linenumbers\nset mouse\nset softwrap' >> /etc/nanorc
-echo -e "alias up='apt update && apt -y upgrade'\nalias cl='apt autoremove && apt autoclean'\nalias ain='apt install'\nalias are='apt remove'\nalias cls='clear'\nalias ..='. /usr/share/bash-completion/bash_completion'" >> /root/.bashrc
+cat >> /root/.bashrc << EOF
+
+alias up='apt update && apt upgrade -y'
+alias cl='apt autoremove && apt autoclean && apt clean'
+alias ain='apt install'
+alias arm='apt purge'
+alias cls='clear'
+
+if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+    . /etc/bash_completion
+fi
+EOF
+
 echo -e "\n\e[32;7m【 检查HOSTNAME 】\e[0m"
 echo $HOSTNAME | egrep -q '^[a-z]{2}\.[bopt]{4}\.[bopt]{3}$'
 if [ $? -eq 0 ]
@@ -25,7 +37,25 @@ echo -e "\n\e[32;7m【 安装caddy 】\e[0m"
 wget -t3 -O /usr/bin/caddy https://caddyserver.com/api/download
 chmod 755 /usr/bin/caddy
 groupadd --system caddy
-wget -t3 -P /etc/systemd/system https://github.com/grhooo/private/raw/main/caddy.service
+cat > /etc/systemd/system/caddy.service << EOF
+[Unit]
+Description=Caddy
+Documentation=https://caddyserver.com/docs/
+After=network.target network-online.target
+Requires=network-online.target
+
+[Service]
+User=root
+Group=root
+ExecStart=/usr/bin/caddy run --environ --config /etc/caddy/Caddyfile
+ExecReload=/usr/bin/caddy reload --config /etc/caddy/Caddyfile
+TimeoutStopSec=5s
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target
+EOF
 mkdir /etc/caddy
 mkdir /usr/share/caddy
 wget -t3 -P /usr/share/caddy https://github.com/grhooo/private/raw/main/index.html
