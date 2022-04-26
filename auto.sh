@@ -38,7 +38,7 @@ chmod +x /root/*.sh
 bash -c "$(cat /root/inst_x.sh)" @ install --beta --without-geodata
 bash -c "$(cat /root/inst_h.sh)"
 sed -i -e 's/User=nobody/User=root/g' -e 's/CapabilityBoundingSet=/#CapabilityBoundingSet=/g' -e 's/AmbientCapabilities=/#AmbientCapabilities=/g' /etc/systemd/system/xray.service
-## echo "net.core.rmem_max=2500000" >> /etc/sysctl.conf && sysctl -p
+echo "net.core.rmem_max=4000000" >> /etc/sysctl.conf && sysctl -p
 
 echo -e "\n\e[32;7m【 下载证书 】\e[0m"
 if echo $HOSTNAME | grep -q us
@@ -54,7 +54,7 @@ elif echo $HOSTNAME | grep -q hk
     echo -e '\e[31;5m 请手动下载证书至/usr/local/etc/xray！\e[0m'
 fi
 echo -e '{\n  "log": {\n    "access": "none",\n    "error": "none"\n  },\n  "inbounds": [\n    {\n      "port": 443,\n      "protocol": "vless",\n      "settings": {\n        "clients": [\n          {\n            "id": "xray@ptbt.top",\n            "flow": "xtls-rprx-direct"\n          }\n        ],\n        "decryption": "none",\n        "fallbacks": [\n          {\n            "dest": 8080\n          }\n        ]\n      },\n      "streamSettings": {\n        "network": "tcp",\n        "security": "xtls",\n        "xtlsSettings": {\n          "alpn": ["http/1.1"],\n          "certificates": [\n            {\n              "certificateFile": "/usr/local/etc/xray/ptbt.crt",\n              "keyFile": "/usr/local/etc/xray/ptbt.key"\n            }\n          ]\n        }\n      }\n    }\n  ],\n  "outbounds": [\n    {\n      "protocol": "freedom"\n    }\n  ]\n}' > /usr/local/etc/xray/config.json
-echo -e '{\n  "listen": ":33445",\n  "cert": "/usr/local/etc/xray/ptbt.crt",\n  "key": "/usr/local/etc/xray/ptbt.key",\n  "obfs": "66668888"\n}' > /etc/hysteria/config.json
+echo -e '{\n  "listen": ":33445",\n  "protocol": "wechat-video",\n  "cert": "/usr/local/etc/xray/ptbt.crt",\n  "key": "/usr/local/etc/xray/ptbt.key",\n  "alpn": "66668888",\n  "recv_window_conn": 104857600,\n  "recv_window_client": 104857600\n}' > /etc/hysteria/config.json
 systemctl daemon-reload
 systemctl enable --now caddy
 systemctl restart xray
