@@ -68,7 +68,20 @@ chmod +x /root/*.sh
 bash -c "$(cat /root/inst_x.sh)" @ install --beta --without-geodata
 bash -c "$(cat /root/inst_h.sh)"
 sed -i -e 's/User=nobody/User=root/g' -e 's/CapabilityBoundingSet=/#CapabilityBoundingSet=/g' -e 's/AmbientCapabilities=/#AmbientCapabilities=/g' /etc/systemd/system/xray.service
-echo "net.core.rmem_max=4000000" >> /etc/sysctl.conf && sysctl -p
+cat >> /etc/sysctl.conf << EOF
+
+net.core.netdev_max_backlog = 30000
+net.core.rmem_max = 67108864
+net.core.wmem_max = 67108864
+net.ipv4.tcp_wmem = 4096 12582912 33554432
+net.ipv4.tcp_rmem = 4096 12582912 33554432
+net.ipv4.tcp_max_syn_backlog = 80960
+net.ipv4.tcp_slow_start_after_idle = 0
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.ip_local_port_range = 10240 65535
+net.ipv4.tcp_abort_on_overflow = 1
+EOF
+sysctl -p
 
 echo -e "\n\e[32;7m【 下载证书 】\e[0m"
 if echo $HOSTNAME | grep -q us
