@@ -104,16 +104,10 @@ systemctl restart xray
 rm -rf /var/log/xray
 systemctl enable hysteria-server && systemctl start hysteria-server
 
-echo -e "\n\e[32;7m【 安装dnsmasq 】\e[0m"
-apt -y install dnsmasq
-mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
-echo -e 'no-resolv\nno-poll\ninterface=eth0\nbind-interfaces\nlisten-address=127.0.0.1\nserver=8.8.8.8\nserver=1.1.1.1\ncache-size=1500' > /etc/dnsmasq.conf
-cat /etc/dnsmasq.conf
-
 echo -e "\n\e[32;7m【 修改ssh端口 】\e[0m"
 if grep -q '^Port\s.*' /etc/ssh/sshd_config
-then
-  sed -i 's/^Port\s.*/Port 27184/m' /etc/ssh/sshd_config
+  then
+    sed -i 's/^Port\s.*/Port 27184/m' /etc/ssh/sshd_config
 else
   echo 'Port 27184' >> /etc/ssh/sshd_config
 fi
@@ -126,8 +120,15 @@ echo '0 5,17 * * * /bin/bash -c "$(cat /root/inst_h.sh)"' >> /var/spool/cron/cro
 echo '0 7 * * * /bin/wget -t3 -O /usr/share/caddy/geo.zip https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/rules.zip' >> /var/spool/cron/crontabs/root
 echo '30 */2 * * * /bin/wget -t3 -O /usr/share/caddy/rules.tar.gz https://github.com/grhooo/adfilters/releases/latest/download/rules.tar.gz && /bin/tar -xf /usr/share/caddy/rules.tar.gz -C /usr/share/caddy' >> /var/spool/cron/crontabs/root
 
+echo -e "\n\e[32;7m【 安装AdGuardHome 】\e[0m"
+curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- -c beta
+sed -i 's/domain-name-servers,//g' /etc/dhcp/dhclient.conf
+echo nameserver 127.0.0.1 > /etc/resolv.conf
+
 echo -e "\n\e[32;7m【 caddy/xray/hysteria运行情况 】\e[0m"
 systemctl | grep -E 'caddy|xray|hysteria' --color=auto
 echo -e "\n\e[32;7m【 /etc/caddy/Caddyfile 】\e[0m"
 cat /etc/caddy/Caddyfile
-echo -en "\n\e[41;5m  服务器必须重启！ \e[0m"
+wget -t3 -P /root https://github.com/grhooo/private/raw/main/AdH.yaml
+IP=$(hostname -I) && echo -e "\n\e[34;1m AdGuardHome设置页面：http://${IP%% *}:3000\e[0m"
+echo -e '\e[33;1m完 成设置后请参照\e[0m\e[32;1m/root/AdH.yaml\e[0m\e[33;1m修改\e[0m\e[32;1m/opt/AdGuardHome/AdGuardHome.yaml\e[0m'
