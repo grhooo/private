@@ -119,7 +119,6 @@ echo '0 4,16 * * * /bin/bash -c "$(cat /root/inst_x.sh)" @ install --beta --with
 echo '0 5,17 * * * /bin/bash /root/inst_h.sh && systemctl restart hysteria-server.service' >> /var/spool/cron/crontabs/root
 echo '30 0 * * 3,6 caddy upgrade && systemctl restart caddy.service' >> /var/spool/cron/crontabs/root
 echo '0 7 * * * /bin/wget -t3 -O /usr/share/caddy/geo.zip https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/rules.zip' >> /var/spool/cron/crontabs/root
-echo '30 */2 * * * /bin/wget -t3 -O /usr/share/caddy/rules.tar.gz https://github.com/grhooo/adfilters/releases/latest/download/rules.tar.gz && /bin/tar -xf /usr/share/caddy/rules.tar.gz -C /usr/share/caddy' >> /var/spool/cron/crontabs/root
 
 echo -e "\n\e[32;7m【 安装AdGuardHome 】\e[0m"
 curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- -c beta
