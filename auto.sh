@@ -58,6 +58,7 @@ WantedBy=multi-user.target
 EOF
 mkdir /etc/caddy
 mkdir /usr/share/caddy
+ln -s /usr/share/caddy /root/usr_share_caddy
 wget -t3 -P /usr/share/caddy https://github.com/grhooo/private/raw/main/index.html
 echo -e ':8080 {\n  root * /usr/share/caddy\n  file_server\n}\n'$HOSTNAME':80 {\n  redir https://'$HOSTNAME'{uri}\n}' > /etc/caddy/Caddyfile
 
