@@ -14,14 +14,14 @@ fi
 EOF
 
 echo -e "\n\e[32;7m【 检查HOSTNAME 】\e[0m"
-echo $HOSTNAME | egrep -q '^[a-z]{2}\.[bopt]{4}\.[bopt]{3}$'
+echo $HOSTNAME | egrep -q '^[a-z]{2,3}\.[bopt]{4}\.[bopt]{3}$'
 if [ $? -eq 0 ]
   then
     echo -e ' \e[36;7m '$HOSTNAME' \e[0m'
 else
   echo -e -n '\e[33;1m请输入hostname:\e[0m '
   read input
-  echo -e ''$input'' | egrep -q '^[a-z]{2}\.[bopt]{4}\.[bopt]{3}$'
+  echo -e ''$input'' | egrep -q '^[a-z]{2,3}\.[bopt]{4}\.[bopt]{3}$'
   if [ $? -eq 0 ]
     then
       hostnamectl set-hostname $input
@@ -91,9 +91,9 @@ if echo $HOSTNAME | grep -q us
 elif echo $HOSTNAME | grep -q jp
   then
     wget -t3 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/jp/ptbt.{crt,key}
-elif echo $HOSTNAME | grep -q hk
+elif echo $HOSTNAME | grep -q aws
   then
-    wget -t3 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/hk/ptbt.{crt,key}
+    wget -t3 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/aws/ptbt.{crt,key}
   else 
     echo -e '\e[31;5m 请手动下载证书至/usr/local/etc/xray！\e[0m'
 fi
@@ -105,14 +105,14 @@ systemctl restart xray
 rm -rf /var/log/xray
 systemctl enable hysteria-server && systemctl start hysteria-server
 
-echo -e "\n\e[32;7m【 修改ssh端口 】\e[0m"
-if grep -q '^Port\s.*' /etc/ssh/sshd_config
-  then
-    sed -i 's/^Port\s.*/Port 27184/m' /etc/ssh/sshd_config
-else
-  echo 'Port 27184' >> /etc/ssh/sshd_config
-fi
-echo -en ' \e[36;7mSSH ' && cat /etc/ssh/sshd_config | grep '^Port\s.*' && echo -en '\e[0m'
+#echo -e "\n\e[32;7m【 修改ssh端口 】\e[0m"
+#if grep -q '^Port\s.*' /etc/ssh/sshd_config
+#  then
+#    sed -i 's/^Port\s.*/Port 27184/m' /etc/ssh/sshd_config
+#else
+#  echo 'Port 27184' >> /etc/ssh/sshd_config
+#fi
+#echo -en ' \e[36;7mSSH ' && cat /etc/ssh/sshd_config | grep '^Port\s.*' && echo -en '\e[0m'
 
 echo -e "\n\e[32;7m【 设置定时任务 】\e[0m"
 timedatectl set-timezone Asia/Shanghai
@@ -130,6 +130,5 @@ echo -e "\n\e[32;7m【 caddy/xray/hysteria运行情况 】\e[0m"
 systemctl | grep -E 'caddy|xray|hysteria' --color=auto
 echo -e "\n\e[32;7m【 /etc/caddy/Caddyfile 】\e[0m"
 cat /etc/caddy/Caddyfile
-wget -t3 -P /root https://github.com/grhooo/private/raw/main/AdH.yaml
 IP=$(hostname -I) && echo -e "\n\e[34;1m AdGuardHome设置页面：http://${IP%% *}:3000\e[0m"
-echo -e '\e[33;1m完 成设置后请参照\e[0m\e[32;1m/root/AdH.yaml\e[0m\e[33;1m修改\e[0m\e[32;1m/opt/AdGuardHome/AdGuardHome.yaml\e[0m'
+echo -e '\e[33;1mAdGuardHome配置文件：\e[0m\e[32;1m/opt/AdGuardHome/AdGuardHome.yaml\e[0m'
