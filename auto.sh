@@ -60,7 +60,7 @@ mkdir /etc/caddy
 mkdir /usr/share/caddy
 ln -s /usr/share/caddy /root/usr_share_caddy
 wget -t3 -P /usr/share/caddy https://github.com/grhooo/private/raw/main/index.html
-echo -e ':8080 {\n	root * /usr/share/caddy\n	file_server\n}\n:80 {\n	redir https://'$HOSTNAME'{uri}\n}' > /etc/caddy/Caddyfile
+echo -e ':8080 {\n	root * /usr/share/caddy\n	file_server\n}\nhttp://'$HOSTNAME' {\n	redir https://'$HOSTNAME'{uri}\n}' > /etc/caddy/Caddyfile
 
 echo -e "\e[32;7m【 安装xray/hysteria 】\e[0m"
 wget -t3 -O /root/inst_x.sh https://github.com/XTLS/Xray-install/raw/main/install-release.sh
