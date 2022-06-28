@@ -34,32 +34,12 @@ else
 fi
 
 echo -e "\n\e[32;7m【 安装caddy 】\e[0m"
-wget -t3 -O /usr/bin/caddy https://caddyserver.com/api/download
-chmod 755 /usr/bin/caddy
-groupadd --system caddy
-cat > /etc/systemd/system/caddy.service << EOF
-[Unit]
-Description=Caddy
-Documentation=https://caddyserver.com/docs/
-After=network.target network-online.target
-Requires=network-online.target
-
-[Service]
-User=root
-Group=root
-ExecStart=/usr/bin/caddy run --environ --config /etc/caddy/Caddyfile
-ExecReload=/usr/bin/caddy reload --config /etc/caddy/Caddyfile
-TimeoutStopSec=5s
-PrivateTmp=true
-ProtectSystem=full
-
-[Install]
-WantedBy=multi-user.target
-EOF
-mkdir /etc/caddy
-mkdir /usr/share/caddy
-ln -s /usr/share/caddy /root/usr_share_caddy
-wget -t3 -P /usr/share/caddy https://github.com/grhooo/private/raw/main/index.html
+apt install -y debian-keyring debian-archive-keyring apt-transport-https
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
+apt update && apt install caddy
+wget -t3 -O /usr/share/caddy/index.html https://github.com/grhooo/private/raw/main/index.html
+ln -s /usr/share/caddy /root/caddy_share
 echo -e ':8080 {\n	root * /usr/share/caddy\n	file_server\n}\nhttp://'$HOSTNAME' {\n	redir https://'$HOSTNAME'{uri}\n}' > /etc/caddy/Caddyfile
 
 echo -e "\e[32;7m【 安装xray/hysteria 】\e[0m"
@@ -100,10 +80,10 @@ fi
 echo -e '{\n  "log": {\n    "access": "none",\n    "error": "none"\n  },\n  "inbounds": [\n    {\n      "port": 443,\n      "protocol": "vless",\n      "settings": {\n        "clients": [\n          {\n            "id": "xray@ptbt.top",\n            "flow": "xtls-rprx-direct"\n          }\n        ],\n        "decryption": "none",\n        "fallbacks": [\n          {\n            "dest": 8080\n          }\n        ]\n      },\n      "streamSettings": {\n        "network": "tcp",\n        "security": "xtls",\n        "xtlsSettings": {\n          "alpn": ["http/1.1"],\n          "certificates": [\n            {\n              "certificateFile": "/usr/local/etc/xray/ptbt.crt",\n              "keyFile": "/usr/local/etc/xray/ptbt.key"\n            }\n          ]\n        }\n      }\n    }\n  ],\n  "outbounds": [\n    {\n      "protocol": "freedom"\n    }\n  ]\n}' > /usr/local/etc/xray/config.json
 echo -e '{\n  "listen": ":33445",\n  "protocol": "wechat-video",\n  "cert": "/usr/local/etc/xray/ptbt.crt",\n  "key": "/usr/local/etc/xray/ptbt.key",\n  "alpn": "66668888",\n  "recv_window_conn": 104857600,\n  "recv_window_client": 104857600\n}' > /etc/hysteria/config.json
 systemctl daemon-reload
-systemctl enable --now caddy
+systemctl enable hysteria-server && systemctl start hysteria-server
+systemctl restart caddy
 systemctl restart xray
 rm -rf /var/log/xray
-systemctl enable hysteria-server && systemctl start hysteria-server
 
 #echo -e "\n\e[32;7m【 修改ssh端口 】\e[0m"
 #if grep -q '^Port\s.*' /etc/ssh/sshd_config
