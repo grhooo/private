@@ -74,7 +74,6 @@ rm -rf /var/log/xray
 echo -e "\n\e[32;7m【 设置定时任务 】\e[0m"
 timedatectl set-timezone Asia/Shanghai
 echo '0 4,16 * * * /bin/bash -c "$(cat /root/inst_x.sh)" @ install --beta --without-geodata' > /var/spool/cron/crontabs/root
-echo '30 0 * * 3,6 caddy upgrade && systemctl restart caddy.service' >> /var/spool/cron/crontabs/root
 echo '0 7 * * * /bin/wget -t3 -O /usr/share/caddy/geo.zip https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/rules.zip' >> /var/spool/cron/crontabs/root
 
 echo -e "\n\e[32;7m【 安装AdGuardHome 】\e[0m"
