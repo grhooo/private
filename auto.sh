@@ -1,4 +1,9 @@
 #!/bin/sh
+echo 'net.ipv6.conf.all.disable_ipv6 = 1' >> /etc/sysctl.conf
+sed -i 's/#AddressFamily any/AddressFamily inet/g' /etc/ssh/sshd_config
+sysctl -p
+sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
+update-grub
 echo -e 'set linenumbers\nset mouse\nset softwrap' >> /etc/nanorc
 cat >> /root/.bashrc << EOF
 
