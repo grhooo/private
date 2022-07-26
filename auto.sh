@@ -52,14 +52,14 @@ bash -c "$(cat /root/inst_x.sh)" @ install --beta --without-geodata
 sed -i -e 's/User=nobody/User=root/g' -e 's/CapabilityBoundingSet=/#CapabilityBoundingSet=/g' -e 's/AmbientCapabilities=/#AmbientCapabilities=/g' /etc/systemd/system/xray.service
 
 echo -e "\n\e[32;7m【 下载证书 】\e[0m"
-if echo $HOSTNAME | grep -q us
-  then
-    wget -t3 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/us/ptbt.{crt,key}
-elif echo $HOSTNAME | grep -q jp
-  then
-    wget -t3 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/jp/ptbt.{crt,key}
-  else 
-    echo -e '\e[31;5m 请手动下载证书至/usr/local/etc/xray！\e[0m'
+if echo $HOSTNAME | grep -q us; then
+  wget -t3 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/us/ptbt.{crt,key}
+elif echo $HOSTNAME | grep -q jp; then
+  wget -t3 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/jp/ptbt.{crt,key}
+elif echo $HOSTNAME | grep -q hk; then
+  wget -t3 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/hk/ptbt.{crt,key}
+else
+  echo -e '\e[31;5m 请手动下载证书至/usr/local/etc/xray！\e[0m'
 fi
 echo -e '{\n  "log": {\n    "access": "none",\n    "error": "none"\n  },\n  "inbounds": [\n    {\n      "port": 443,\n      "protocol": "vless",\n      "settings": {\n        "clients": [\n          {\n            "id": "xray@ptbt.top",\n            "flow": "xtls-rprx-direct"\n          }\n        ],\n        "decryption": "none",\n        "fallbacks": [\n          {\n            "dest": 8080\n          }\n        ]\n      },\n      "streamSettings": {\n        "network": "tcp",\n        "security": "xtls",\n        "xtlsSettings": {\n          "alpn": ["http/1.1"],\n          "certificates": [\n            {\n              "certificateFile": "/usr/local/etc/xray/ptbt.crt",\n              "keyFile": "/usr/local/etc/xray/ptbt.key"\n            }\n          ]\n        }\n      }\n    }\n  ],\n  "outbounds": [\n    {\n      "protocol": "freedom"\n    }\n  ]\n}' > /usr/local/etc/xray/config.json
 systemctl daemon-reload
@@ -67,14 +67,12 @@ systemctl restart caddy
 systemctl restart xray
 rm -rf /var/log/xray
 
-#echo -e "\n\e[32;7m【 修改ssh端口 】\e[0m"
-#if grep -q '^Port\s.*' /etc/ssh/sshd_config
-#  then
-#    sed -i 's/^Port\s.*/Port 27184/m' /etc/ssh/sshd_config
-#else
-#  echo 'Port 27184' >> /etc/ssh/sshd_config
-#fi
-#echo -en ' \e[36;7mSSH ' && cat /etc/ssh/sshd_config | grep '^Port\s.*' && echo -en '\e[0m'
+echo -e "\n\e[32;7m【 修改ssh端口 】\e[0m"
+if grep -q '^Port\s.*' /etc/ssh/sshd_config; then
+  sed -i 's/^Port\s.*/Port 27184/m' /etc/ssh/sshd_config
+else
+  echo 'Port 27184' >> /etc/ssh/sshd_config
+fi
 
 echo -e "\n\e[32;7m【 设置定时任务 】\e[0m"
 timedatectl set-timezone Asia/Shanghai
