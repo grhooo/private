@@ -8,7 +8,7 @@ echo -e 'set linenumbers\nset mouse\nset softwrap' >> /etc/nanorc
 cat >> /root/.bashrc << EOF
 
 alias up='apt update && apt upgrade -y'
-alias cl='apt autoremove && apt autoclean && apt clean'
+alias cl='apt autoremove && apt autoclean'
 alias cls='clear'
 
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
