@@ -1,4 +1,5 @@
 #!/bin/sh
+rm -f /etc/motd
 echo 'net.ipv6.conf.all.disable_ipv6 = 1' >> /etc/sysctl.conf
 sed -i 's/#AddressFamily any/AddressFamily inet/g' /etc/ssh/sshd_config
 sysctl -p
