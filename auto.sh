@@ -1,7 +1,6 @@
 #!/bin/sh
 rm -f /etc/motd
 echo 'net.ipv6.conf.all.disable_ipv6 = 1' >> /etc/sysctl.conf
-sed -i 's/#AddressFamily any/AddressFamily inet/g' /etc/ssh/sshd_config
 sysctl -p
 sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
 update-grub
@@ -38,7 +37,7 @@ else
 fi
 
 echo -e "\n\e[32;7m【 安装caddy 】\e[0m"
-apt install -y debian-keyring debian-archive-keyring apt-transport-https
+apt install -y debian-keyring debian-archive-keyring apt-transport-https zip
 curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
 curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
 apt update && apt install caddy
@@ -53,12 +52,12 @@ bash -c "$(cat /root/inst_x.sh)" @ install --beta --without-geodata
 sed -i -e 's/User=nobody/User=root/g' -e 's/CapabilityBoundingSet=/#CapabilityBoundingSet=/g' -e 's/AmbientCapabilities=/#AmbientCapabilities=/g' /etc/systemd/system/xray.service
 
 echo -e "\n\e[32;7m【 下载证书 】\e[0m"
-if echo $HOSTNAME | grep -q us; then
-  wget -t3 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/us/ptbt.{crt,key}
-elif echo $HOSTNAME | grep -q jp; then
-  wget -t3 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/jp/ptbt.{crt,key}
-elif echo $HOSTNAME | grep -q hk; then
-  wget -t3 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/hk/ptbt.{crt,key}
+if echo $HOSTNAME | egrep -q '^[o-z]{2}'; then
+  wget -t3 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/1/ptbt.{crt,key}
+elif echo $HOSTNAME | egrep -q '^[i-t]{2}'; then
+  wget -t3 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/2/ptbt.{crt,key}
+elif echo $HOSTNAME | egrep -q '^[a-o]{2}'; then
+  wget -t3 -P /usr/local/etc/xray https://github.com/grhooo/private/raw/main/cer/3/ptbt.{crt,key}
 else
   echo -e '\e[31;5m 请手动下载证书至/usr/local/etc/xray！\e[0m'
 fi
@@ -69,16 +68,21 @@ systemctl restart xray
 rm -rf /var/log/xray
 
 echo -e "\n\e[32;7m【 修改ssh端口 】\e[0m"
+sed -i -e 's/X11Forwarding yes/X11Forwarding no/m' -e 's/UsePAM yes/UsePAM no/m' -e 's/#AddressFamily any/AddressFamily inet/m' /etc/ssh/sshd_config
 if grep -q '^Port\s.*' /etc/ssh/sshd_config; then
   sed -i 's/^Port\s.*/Port 27184/m' /etc/ssh/sshd_config
 else
-  echo 'Port 27184' >> /etc/ssh/sshd_config
+  sed -i 's/#Port 22/Port 27184/m' /etc/ssh/sshd_config
 fi
 
 echo -e "\n\e[32;7m【 设置定时任务 】\e[0m"
 timedatectl set-timezone Asia/Shanghai
 echo '0 4,16 * * * /bin/bash -c "$(cat /root/inst_x.sh)" @ install --beta --without-geodata' > /var/spool/cron/crontabs/root
-echo '0 7 * * * /bin/wget -t3 -O /usr/share/caddy/geo.zip https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/rules.zip' >> /var/spool/cron/crontabs/root
+if echo $HOSTNAME | egrep -q '^[i-t]{2}'; then
+  echo '0 7 * * * cd `mktemp -d` && /bin/wget -t3 https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/rules.zip && /bin/unzip rules.zip && /bin/zip -j9 geo.zip *.dat && /bin/mv geo.zip /usr/share/caddy && /bin/rm -rf /tmp/tmp.*' >> /var/spool/cron/crontabs/root
+else
+  echo -n
+fi
 
 echo -e "\n\e[32;7m【 安装AdGuardHome 】\e[0m"
 curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- -c beta
