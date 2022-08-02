@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 rm /etc/motd
 echo 'net.ipv6.conf.all.disable_ipv6 = 1' >> /etc/sysctl.conf
 sysctl -p
@@ -87,9 +87,9 @@ else
 fi
 
 echo -e "\n\e[32;7m【 安装AdGuardHome 】\e[0m"
-curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- -c beta
-sed -i 's/domain-name-servers,//g' /etc/dhcp/dhclient.conf
-echo nameserver 127.0.0.1 > /etc/resolv.conf
+curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | bash -s -- -c beta
+sed -i -e 's/domain-name-servers, //g' -e '/dhcp6/d' /etc/dhcp/dhclient.conf
+echo 'nameserver 127.0.0.1' > /etc/resolv.conf
 
 echo -e "\n\e[32;7m【 caddy/verysimple运行情况 】\e[0m"
 systemctl list-unit-files | egrep '^UNIT|caddy.s|verysimple'
