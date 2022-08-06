@@ -64,7 +64,7 @@ tar -xJf verysimple_linux_amd64.tar.xz -C /usr/local/etc/verysimple
 rm verysimple_linux_amd64.tar.xz
 echo -e '[Unit]\nAfter=network.service\n\n[Service]\nExecStart=/usr/local/etc/verysimple/verysimple -c /usr/local/etc/verysimple/server.toml\n\n[Install]\nWantedBy=default.target' > /etc/systemd/system/verysimple.service
 chmod 664 /etc/systemd/system/verysimple.service
-echo -e '[app]\nloglevel = 9\nlogfile = ""\n\n[[listen]]\nprotocol = "vlesss"\nuuid = "1587875e-bf9a-40f6-b19b-42b7104ead4e"\nhost = "0.0.0.0"\nport = 33445\nversion = -1\ninsecure = false\nfallback = ":80"\ncert = "/usr/local/etc/ptbt.crt"\nkey = "/usr/local/etc/ptbt.key"\n#lazy = true\n\n[[dial]]\nprotocol = "direct"' > /usr/local/etc/verysimple/server.toml
+echo -e '[app]\nloglevel = 6\nlogfile = ""\n[[listen]]\nprotocol = "vlesss"\nuuid = "1587875e-bf9a-40f6-b19b-42b7104ead4e"\nhost = "0.0.0.0"\nport = 33445\nversion = -1\ninsecure = false\nfallback = ":80"\ncert = "/usr/local/etc/ptbt.crt"\nkey = "/usr/local/etc/ptbt.key"\n#lazy = true\n[[dial]]\nprotocol = "direct"' > /usr/local/etc/verysimple/server.toml
 systemctl daemon-reload
 systemctl enable verysimple
 systemctl start verysimple
