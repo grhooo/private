@@ -81,7 +81,7 @@ fi
 echo -e "\n\e[32;7m【 设置定时任务 】\e[0m"
 timedatectl set-timezone Asia/Shanghai
 if echo $HOSTNAME | egrep -q '^[i-t]{2}'; then
-  echo '00 7 * * * cd `mktemp -d` && /bin/wget -t3 https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/rules.zip && /bin/unzip rules.zip && /bin/zip -j9 geo.zip *.dat && /bin/mv geo.zip /usr/share/caddy && /bin/rm -rf /tmp/tmp.*' > /var/spool/cron/crontabs/root
+  echo -e '00 7 * * * cd `mktemp -d` && /bin/wget -t3 https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/rules.zip && /bin/unzip rules.zip && /bin/zip -j9 geo.zip *.dat && /bin/mv geo.zip /usr/share/caddy && /bin/rm -rf /tmp/tmp.*\n20 22 * * * /bin/wget -t3 -O /usr/share/caddy/trackers_best.txt https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_best.txt' > /var/spool/cron/crontabs/root
 else
   echo -n
 fi
