@@ -10,6 +10,8 @@ cat >> /root/.bashrc << EOF
 alias up='apt update && apt upgrade -y'
 alias cl='apt autoremove && apt autoclean'
 alias cls='clear'
+alias rst='systemctl restart'
+alias sta='systemctl status'
 
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
     . /etc/bash_completion
