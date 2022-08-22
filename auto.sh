@@ -12,6 +12,7 @@ alias cl='apt autoremove && apt autoclean'
 alias cls='clear'
 alias rst='systemctl restart'
 alias sta='systemctl status'
+alias ..='. .bashrc'
 
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
     . /etc/bash_completion
