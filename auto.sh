@@ -90,7 +90,8 @@ else
 fi
 
 echo -e "\n\e[32;7m【 安装AdGuardHome 】\e[0m"
-curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | bash -s -- -c beta
+curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | bash -s -- -c edge
+/opt/AdGuardHome/AdGuardHome -s stop
 sed -i -e 's/domain-name-servers, //g' -e '/dhcp6/d' /etc/dhcp/dhclient.conf
 echo 'nameserver 127.0.0.1' > /etc/resolv.conf
 
