@@ -4,7 +4,7 @@ echo 'net.ipv6.conf.all.disable_ipv6 = 1' >> /etc/sysctl.conf
 sysctl -p
 sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
 update-grub
-echo -e 'set linenumbers\nset mouse\nset softwrap' >> /etc/nanorc
+echo -e "set linenumbers\nset mouse\nset softwrap" >> /etc/nanorc
 cat >> /root/.bashrc << EOF
 
 alias up='apt update && apt upgrade -y'
@@ -51,10 +51,7 @@ else
 fi
 
 echo -e "\n\e[32;7m【 安装caddy 】\e[0m"
-apt install -y debian-keyring debian-archive-keyring apt-transport-https zip xz-utils
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
-apt update && apt install caddy
+apt install -y caddy
 ## wget -t3 -O /usr/share/caddy/index.html https://github.com/grhooo/private/raw/main/index.html
 ln -s /usr/share/caddy /root/_caddyshare
 echo -e "$HOSTNAME\ntls /usr/local/etc/ptbt.crt /usr/local/etc/ptbt.key\nroot * /usr/share/caddy\nfile_server" > /etc/caddy/Caddyfile
@@ -65,7 +62,7 @@ ln -s /usr/local/etc/verysimple /root/_verysimple
 wget -t3 https://github.com/e1732a364fed/v2ray_simple/releases/latest/download/verysimple_linux_amd64.tar.xz
 tar -xJf verysimple_linux_amd64.tar.xz -C /usr/local/etc/verysimple
 rm verysimple_linux_amd64.tar.xz
-echo -e '[Unit]\nAfter=network.service\n\n[Service]\nExecStart=/usr/local/etc/verysimple/verysimple -c /usr/local/etc/verysimple/server.toml\n\n[Install]\nWantedBy=default.target' > /etc/systemd/system/verysimple.service
+echo -e "[Unit]\nAfter=network.service\n\n[Service]\nExecStart=/usr/local/etc/verysimple/verysimple -c /usr/local/etc/verysimple/server.toml\n\n[Install]\nWantedBy=default.target" > /etc/systemd/system/verysimple.service
 chmod 664 /etc/systemd/system/verysimple.service
 echo -e '[app]\nloglevel = 6\n[[listen]]\nprotocol = "vlesss"\nuuid = "1587875e-bf9a-40f6-b19b-42b7104ead4e"\nport = 12345\ninsecure = false\nfallback = ":80"\ncert = "/usr/local/etc/ptbt.crt"\nkey = "/usr/local/etc/ptbt.key"\n#lazy = true\n[[dial]]\nprotocol = "direct"' > /usr/local/etc/verysimple/server.toml
 systemctl daemon-reload
@@ -84,7 +81,7 @@ fi
 echo -e "\n\e[32;7m【 设置定时任务 】\e[0m"
 timedatectl set-timezone Asia/Shanghai
 if echo $HOSTNAME | egrep -q '^[i-t]{2}'; then
-  echo -e '00 7 * * * cd `mktemp -d` && /bin/wget -t3 https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/rules.zip && /bin/unzip rules.zip && /bin/zip -j9 geo.zip *.dat && /bin/mv geo.zip /usr/share/caddy && /bin/rm -rf /tmp/tmp.*\n15 */8 * * * /bin/wget -t3 -O /usr/share/caddy/best.txt https://raw.githubusercontent.com/XIU2/TrackersListCollection/master/best.txt' > /var/spool/cron/crontabs/root
+  echo -e '00 7 * * * cd `mktemp -d` && /bin/wget -t3 https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/rules.zip && /bin/unzip rules.zip && /bin/zip -j9 geo.zip *.dat && /bin/mv geo.zip /usr/share/caddy && /bin/rm -rf /tmp/tmp.*\n15 */8 * * * /bin/wget -t3 -O /usr/share/caddy/best.txt https://raw.githubusercontent.com/XIU2/TrackersListCollection/master/best.txt\n10 9-18/9 * * * /bin/wget -t3 -O /usr/share/caddy/tvbox.json https://raw.githubusercontent.com/2hacc/TVBox/main/tvbox.json' > /var/spool/cron/crontabs/root
 else
   echo -n
 fi
